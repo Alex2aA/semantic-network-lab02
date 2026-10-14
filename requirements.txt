@@ -1,0 +1,4 @@
+# Воспроизводимые зависимости проекта.
+# Системная зависимость: Graphviz (команда dot) — brew install graphviz
+rdflib>=7.0
+pyshacl>=0.25

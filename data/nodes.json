@@ -1,0 +1,219 @@
+[
+  {
+    "id": "vacancy",
+    "kind": "class",
+    "label": "Вакансия",
+    "definition": "Открытая позиция в компании: множество объектов, сходных по роли и требованиям.",
+    "source": "model"
+  },
+  {
+    "id": "vacancy_dev",
+    "kind": "class",
+    "label": "Вакансия разработчика",
+    "definition": "Вакансия на позицию разработчика программного обеспечения.",
+    "source": "model"
+  },
+  {
+    "id": "vacancy_backend",
+    "kind": "class",
+    "label": "Вакансия бэкенд-разработчика",
+    "definition": "Вакансия разработчика серверной части приложения.",
+    "source": "model"
+  },
+  {
+    "id": "skill",
+    "kind": "class",
+    "label": "Навык",
+    "definition": "Умение, необходимое для вакансии или имеющееся у кандидата; множество навыков.",
+    "source": "model"
+  },
+  {
+    "id": "skill_lang",
+    "kind": "class",
+    "label": "Язык программирования",
+    "definition": "Язык программирования или запросов, входящий в навыки разработчика.",
+    "source": "model"
+  },
+  {
+    "id": "skill_fw",
+    "kind": "class",
+    "label": "Фреймворк",
+    "definition": "Программный фреймворк: набор библиотек и инструментов поверх языка программирования.",
+    "source": "model"
+  },
+  {
+    "id": "skill_db",
+    "kind": "class",
+    "label": "Базы данных и языки запросов",
+    "definition": "Технологии хранения данных: СУБД и языки запросов к ним.",
+    "source": "model"
+  },
+  {
+    "id": "skill_tool",
+    "kind": "class",
+    "label": "Инструмент разработки",
+    "definition": "Инструмент разработки и эксплуатации кода: контроль версий, контейнеризация и т. п.",
+    "source": "model"
+  },
+  {
+    "id": "candidate",
+    "kind": "class",
+    "label": "Кандидат",
+    "definition": "Человек, рассматривающийся на вакансию; имеет опыт работы и набор навыков.",
+    "source": "model"
+  },
+  {
+    "id": "course",
+    "kind": "class",
+    "label": "Курс",
+    "definition": "Образовательная программа, разделённая на модули и обучающая определённым навыкам.",
+    "source": "model"
+  },
+  {
+    "id": "course_module",
+    "kind": "class",
+    "label": "Модуль курса",
+    "definition": "Логическая часть курса, посвящённая одной теме.",
+    "source": "model"
+  },
+  {
+    "id": "vac_java",
+    "kind": "instance",
+    "label": "Вакансия Java-разработчика",
+    "definition": "Открытая позиция бэкенд-разработчика на Java и Spring.",
+    "source": "model"
+  },
+  {
+    "id": "vac_python",
+    "kind": "instance",
+    "label": "Вакансия Python-разработчика",
+    "definition": "Открытая позиция бэкенд-разработчика на Python.",
+    "source": "model"
+  },
+  {
+    "id": "sk_java",
+    "kind": "instance",
+    "label": "Java",
+    "definition": "Статически типизированный язык программирования платформы JVM.",
+    "source": "s_oracle"
+  },
+  {
+    "id": "sk_python",
+    "kind": "instance",
+    "label": "Python",
+    "definition": "Интерпретируемый язык программирования общего назначения.",
+    "source": "s_python"
+  },
+  {
+    "id": "sk_spring",
+    "kind": "instance",
+    "label": "Spring Framework",
+    "definition": "Фреймворк прикладной разработки на Java.",
+    "source": "s_spring"
+  },
+  {
+    "id": "sk_django",
+    "kind": "instance",
+    "label": "Django",
+    "definition": "Высокоуровневый веб-фреймворк на Python.",
+    "source": "s_django"
+  },
+  {
+    "id": "sk_sql",
+    "kind": "instance",
+    "label": "SQL",
+    "definition": "Стандартный язык запросов к реляционным базам данных.",
+    "source": "s_postgres"
+  },
+  {
+    "id": "sk_git",
+    "kind": "instance",
+    "label": "Git",
+    "definition": "Распределённая система контроля версий.",
+    "source": "s_gitscm"
+  },
+  {
+    "id": "sk_docker",
+    "kind": "instance",
+    "label": "Docker",
+    "definition": "Платформа контейнеризации приложений.",
+    "source": "s_docker"
+  },
+  {
+    "id": "cand_ivan",
+    "kind": "instance",
+    "label": "Кандидат Иван",
+    "definition": "Бэкенд-разработчик, владеет Java, SQL и Git.",
+    "source": "model"
+  },
+  {
+    "id": "cand_maria",
+    "kind": "instance",
+    "label": "Кандидат Мария",
+    "definition": "Бэкенд-разработчик на Python, владеет Python, SQL и Docker.",
+    "source": "model"
+  },
+  {
+    "id": "cand_alex",
+    "kind": "instance",
+    "label": "Кандидат Алексей",
+    "definition": "Начинающий разработчик, владеет Java и Git.",
+    "source": "model"
+  },
+  {
+    "id": "crs_spring",
+    "kind": "instance",
+    "label": "Курс «Spring с нуля»",
+    "definition": "Онлайн-курс по Spring: от базовой конфигурации до внедрения зависимостей.",
+    "source": "model"
+  },
+  {
+    "id": "crs_sql",
+    "kind": "instance",
+    "label": "Курс «SQL: практика»",
+    "definition": "Практический курс SQL: запросы, индексы, оптимизация.",
+    "source": "model"
+  },
+  {
+    "id": "crs_git",
+    "kind": "instance",
+    "label": "Курс «Git для разработчиков»",
+    "definition": "Курс по Git: ветвление, слияние, командная работа.",
+    "source": "model"
+  },
+  {
+    "id": "mod_spring_basics",
+    "kind": "instance",
+    "label": "Модуль «Внедрение зависимостей»",
+    "definition": "Модуль курса Spring: контейнер и внедрение зависимостей.",
+    "source": "model"
+  },
+  {
+    "id": "mod_sql_practice",
+    "kind": "instance",
+    "label": "Модуль «Запросы и индексы»",
+    "definition": "Модуль курса SQL: сложные запросы и индексы.",
+    "source": "model"
+  },
+  {
+    "id": "val_op_1y",
+    "kind": "value",
+    "label": "Опыт: 1 год",
+    "definition": "Значение свойства «опыт работы» — 1 год.",
+    "source": "model"
+  },
+  {
+    "id": "val_op_2y",
+    "kind": "value",
+    "label": "Опыт: 2 года",
+    "definition": "Значение свойства «опыт работы» — 2 года.",
+    "source": "model"
+  },
+  {
+    "id": "val_op_3y",
+    "kind": "value",
+    "label": "Опыт: 3 года",
+    "definition": "Значение свойства «опыт работы» — 3 года.",
+    "source": "model"
+  }
+]

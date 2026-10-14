@@ -1,0 +1,241 @@
+@prefix ns1: <https://example.org/semnet/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sem: <https://example.org/semnet/vocab/> .
+
+ns1:candidate a rdfs:Class ;
+    rdfs:label "Кандидат"@ru ;
+    sem:definition "Человек, рассматривающийся на вакансию; имеет опыт работы и набор навыков."@ru .
+
+ns1:course a rdfs:Class ;
+    rdfs:label "Курс"@ru ;
+    sem:definition "Образовательная программа, разделённая на модули и обучающая определённым навыкам."@ru .
+
+ns1:course_module a rdfs:Class ;
+    rdfs:label "Модуль курса"@ru ;
+    sem:definition "Логическая часть курса, посвящённая одной теме."@ru .
+
+ns1:skill a rdfs:Class ;
+    rdfs:label "Навык"@ru ;
+    sem:definition "Умение, необходимое для вакансии или имеющееся у кандидата; множество навыков."@ru .
+
+ns1:skill_db a rdfs:Class ;
+    rdfs:label "Базы данных и языки запросов"@ru ;
+    rdfs:subClassOf ns1:skill ;
+    sem:definition "Технологии хранения данных: СУБД и языки запросов к ним."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:skill_fw a rdfs:Class ;
+    rdfs:label "Фреймворк"@ru ;
+    rdfs:subClassOf ns1:skill ;
+    sem:definition "Программный фреймворк: набор библиотек и инструментов поверх языка программирования."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:skill_lang a rdfs:Class ;
+    rdfs:label "Язык программирования"@ru ;
+    rdfs:subClassOf ns1:skill ;
+    sem:definition "Язык программирования или запросов, входящий в навыки разработчика."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:skill_tool a rdfs:Class ;
+    rdfs:label "Инструмент разработки"@ru ;
+    rdfs:subClassOf ns1:skill ;
+    sem:definition "Инструмент разработки и эксплуатации кода: контроль версий, контейнеризация и т. п."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:vacancy a rdfs:Class ;
+    rdfs:label "Вакансия"@ru ;
+    sem:definition "Открытая позиция в компании: множество объектов, сходных по роли и требованиям."@ru .
+
+ns1:vacancy_backend a rdfs:Class ;
+    rdfs:label "Вакансия бэкенд-разработчика"@ru ;
+    rdfs:subClassOf ns1:vacancy_dev ;
+    sem:definition "Вакансия разработчика серверной части приложения."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:vacancy_dev a rdfs:Class ;
+    rdfs:label "Вакансия разработчика"@ru ;
+    rdfs:subClassOf ns1:vacancy ;
+    sem:definition "Вакансия на позицию разработчика программного обеспечения."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:cand_alex a ns1:candidate,
+        sem:Instance ;
+    rdfs:label "Кандидат Алексей"@ru ;
+    ns1:has_exp ns1:val_op_1y ;
+    ns1:knows ns1:sk_git,
+        ns1:sk_java ;
+    sem:definition "Начинающий разработчик, владеет Java и Git."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:cand_ivan a ns1:candidate,
+        sem:Instance ;
+    rdfs:label "Кандидат Иван"@ru ;
+    ns1:has_exp ns1:val_op_3y ;
+    ns1:knows ns1:sk_git,
+        ns1:sk_java,
+        ns1:sk_sql ;
+    sem:definition "Бэкенд-разработчик, владеет Java, SQL и Git."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:cand_maria a ns1:candidate,
+        sem:Instance ;
+    rdfs:label "Кандидат Мария"@ru ;
+    ns1:has_exp ns1:val_op_3y ;
+    ns1:knows ns1:sk_docker,
+        ns1:sk_python,
+        ns1:sk_sql ;
+    sem:definition "Бэкенд-разработчик на Python, владеет Python, SQL и Docker."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:crs_git a ns1:course,
+        sem:Instance ;
+    rdfs:label "Курс «Git для разработчиков»"@ru ;
+    ns1:teaches ns1:sk_git ;
+    sem:definition "Курс по Git: ветвление, слияние, командная работа."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:has_exp a rdf:Property ;
+    rdfs:label "имеет опыта"@ru ;
+    rdfs:domain ns1:candidate ;
+    sem:meaning "Кандидат имеет указанный опыт работы (значение свойства). Читается: «Кандидат — имеет опыта → Значение»."@ru .
+
+ns1:instance a rdf:Property ;
+    rdfs:label "экземпляр"@ru ;
+    sem:meaning "Конкретный объект принадлежит классу (ISA / instance-of). Читается: «A — экземпляр → B»."@ru .
+
+ns1:knows a rdf:Property ;
+    rdfs:label "владеет"@ru ;
+    rdfs:domain ns1:candidate ;
+    rdfs:range ns1:skill ;
+    sem:meaning "Кандидат владеет навыком. Читается: «Кандидат — владеет → Навык»."@ru .
+
+ns1:mod_spring_basics a ns1:course_module,
+        sem:Instance ;
+    rdfs:label "Модуль «Внедрение зависимостей»"@ru ;
+    ns1:part_of ns1:crs_spring ;
+    sem:definition "Модуль курса Spring: контейнер и внедрение зависимостей."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:mod_sql_practice a ns1:course_module,
+        sem:Instance ;
+    rdfs:label "Модуль «Запросы и индексы»"@ru ;
+    ns1:part_of ns1:crs_sql ;
+    sem:definition "Модуль курса SQL: сложные запросы и индексы."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:part_of a rdf:Property ;
+    rdfs:label "часть"@ru ;
+    rdfs:domain ns1:course_module ;
+    rdfs:range ns1:course ;
+    sem:meaning "Объект A является частью составного объекта B (part-of). Читается: «A — часть → B»."@ru .
+
+ns1:requires a rdf:Property ;
+    rdfs:label "требует"@ru ;
+    rdfs:domain ns1:vacancy ;
+    rdfs:range ns1:skill ;
+    sem:meaning "Вакансия требует навык от кандидата. Читается: «Вакансия — требует → Навык»."@ru .
+
+ns1:requires_exp a rdf:Property ;
+    rdfs:label "требует опыта"@ru ;
+    rdfs:domain ns1:vacancy ;
+    sem:meaning "Вакансия задаёт требуемый опыт работы в виде значения свойства. Читается: «Вакансия — требует опыта → Значение»."@ru .
+
+ns1:sk_django a ns1:skill_fw,
+        sem:Instance ;
+    rdfs:label "Django"@ru ;
+    sem:definition "Высокоуровневый веб-фреймворк на Python."@ru ;
+    sem:source "Django Documentation" .
+
+ns1:subclass a rdf:Property ;
+    rdfs:label "подкласс"@ru ;
+    sem:meaning "Класс A является более частным случаем класса B (AKO / subclass-of). Читается: «A — подкласс → B»."@ru .
+
+ns1:teaches a rdf:Property ;
+    rdfs:label "обучает"@ru ;
+    rdfs:domain ns1:course ;
+    rdfs:range ns1:skill ;
+    sem:meaning "Курс обучает навыку (покрывает его содержанием). Читается: «Курс — обучает → Навык»."@ru .
+
+ns1:vac_java a ns1:vacancy_backend,
+        sem:Instance ;
+    rdfs:label "Вакансия Java-разработчика"@ru ;
+    ns1:requires ns1:sk_java,
+        ns1:sk_spring,
+        ns1:sk_sql ;
+    ns1:requires_exp ns1:val_op_2y ;
+    sem:definition "Открытая позиция бэкенд-разработчика на Java и Spring."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:vac_python a ns1:vacancy_backend,
+        sem:Instance ;
+    rdfs:label "Вакансия Python-разработчика"@ru ;
+    ns1:requires ns1:sk_docker,
+        ns1:sk_python,
+        ns1:sk_sql ;
+    ns1:requires_exp ns1:val_op_3y ;
+    sem:definition "Открытая позиция бэкенд-разработчика на Python."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:crs_spring a ns1:course,
+        sem:Instance ;
+    rdfs:label "Курс «Spring с нуля»"@ru ;
+    ns1:teaches ns1:sk_spring ;
+    sem:definition "Онлайн-курс по Spring: от базовой конфигурации до внедрения зависимостей."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:crs_sql a ns1:course,
+        sem:Instance ;
+    rdfs:label "Курс «SQL: практика»"@ru ;
+    ns1:teaches ns1:sk_sql ;
+    sem:definition "Практический курс SQL: запросы, индексы, оптимизация."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:val_op_1y a sem:Value ;
+    rdfs:label "Опыт: 1 год"@ru ;
+    sem:definition "Значение свойства «опыт работы» — 1 год."@ru .
+
+ns1:val_op_2y a sem:Value ;
+    rdfs:label "Опыт: 2 года"@ru ;
+    sem:definition "Значение свойства «опыт работы» — 2 года."@ru .
+
+ns1:sk_docker a ns1:skill_tool,
+        sem:Instance ;
+    rdfs:label "Docker"@ru ;
+    sem:definition "Платформа контейнеризации приложений."@ru ;
+    sem:source "Docker Documentation" .
+
+ns1:sk_python a ns1:skill_lang,
+        sem:Instance ;
+    rdfs:label "Python"@ru ;
+    sem:definition "Интерпретируемый язык программирования общего назначения."@ru ;
+    sem:source "Python.org — About Python" .
+
+ns1:sk_spring a ns1:skill_fw,
+        sem:Instance ;
+    rdfs:label "Spring Framework"@ru ;
+    sem:definition "Фреймворк прикладной разработки на Java."@ru ;
+    sem:source "Spring Framework Documentation" .
+
+ns1:sk_git a ns1:skill_tool,
+        sem:Instance ;
+    rdfs:label "Git"@ru ;
+    sem:definition "Распределённая система контроля версий."@ru ;
+    sem:source "Pro Git book (git-scm.com)" .
+
+ns1:sk_java a ns1:skill_lang,
+        sem:Instance ;
+    rdfs:label "Java"@ru ;
+    sem:definition "Статически типизированный язык программирования платформы JVM."@ru ;
+    sem:source "The Java Tutorials (Oracle)" .
+
+ns1:val_op_3y a sem:Value ;
+    rdfs:label "Опыт: 3 года"@ru ;
+    sem:definition "Значение свойства «опыт работы» — 3 года."@ru .
+
+ns1:sk_sql a ns1:skill_db,
+        sem:Instance ;
+    rdfs:label "SQL"@ru ;
+    sem:definition "Стандартный язык запросов к реляционным базам данных."@ru ;
+    sem:source "PostgreSQL Documentation — The SQL Language" .
+

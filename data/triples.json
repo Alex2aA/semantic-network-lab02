@@ -1,0 +1,56 @@
+[
+  { "s": "vacancy_dev", "p": "subclass", "o": "vacancy", "source": "model" },
+  { "s": "vacancy_backend", "p": "subclass", "o": "vacancy_dev", "source": "model" },
+  { "s": "skill_lang", "p": "subclass", "o": "skill", "source": "model" },
+  { "s": "skill_fw", "p": "subclass", "o": "skill", "source": "model" },
+  { "s": "skill_db", "p": "subclass", "o": "skill", "source": "model" },
+  { "s": "skill_tool", "p": "subclass", "o": "skill", "source": "model" },
+
+  { "s": "vac_java", "p": "instance", "o": "vacancy_backend", "source": "model" },
+  { "s": "vac_python", "p": "instance", "o": "vacancy_backend", "source": "model" },
+  { "s": "sk_java", "p": "instance", "o": "skill_lang", "source": "s_oracle" },
+  { "s": "sk_python", "p": "instance", "o": "skill_lang", "source": "s_python" },
+  { "s": "sk_spring", "p": "instance", "o": "skill_fw", "source": "s_spring" },
+  { "s": "sk_django", "p": "instance", "o": "skill_fw", "source": "s_django" },
+  { "s": "sk_sql", "p": "instance", "o": "skill_db", "source": "s_postgres" },
+  { "s": "sk_git", "p": "instance", "o": "skill_tool", "source": "s_gitscm" },
+  { "s": "sk_docker", "p": "instance", "o": "skill_tool", "source": "s_docker" },
+  { "s": "cand_ivan", "p": "instance", "o": "candidate", "source": "model" },
+  { "s": "cand_maria", "p": "instance", "o": "candidate", "source": "model" },
+  { "s": "cand_alex", "p": "instance", "o": "candidate", "source": "model" },
+  { "s": "crs_spring", "p": "instance", "o": "course", "source": "model" },
+  { "s": "crs_sql", "p": "instance", "o": "course", "source": "model" },
+  { "s": "crs_git", "p": "instance", "o": "course", "source": "model" },
+  { "s": "mod_spring_basics", "p": "instance", "o": "course_module", "source": "model" },
+  { "s": "mod_sql_practice", "p": "instance", "o": "course_module", "source": "model" },
+
+  { "s": "mod_spring_basics", "p": "part_of", "o": "crs_spring", "source": "model" },
+  { "s": "mod_sql_practice", "p": "part_of", "o": "crs_sql", "source": "model" },
+
+  { "s": "vac_java", "p": "requires", "o": "sk_java", "source": "model" },
+  { "s": "vac_java", "p": "requires", "o": "sk_spring", "source": "model" },
+  { "s": "vac_java", "p": "requires", "o": "sk_sql", "source": "model" },
+  { "s": "vac_python", "p": "requires", "o": "sk_python", "source": "model" },
+  { "s": "vac_python", "p": "requires", "o": "sk_sql", "source": "model" },
+  { "s": "vac_python", "p": "requires", "o": "sk_docker", "source": "model" },
+
+  { "s": "cand_ivan", "p": "knows", "o": "sk_java", "source": "model" },
+  { "s": "cand_ivan", "p": "knows", "o": "sk_git", "source": "model" },
+  { "s": "cand_ivan", "p": "knows", "o": "sk_sql", "source": "model" },
+  { "s": "cand_maria", "p": "knows", "o": "sk_python", "source": "model" },
+  { "s": "cand_maria", "p": "knows", "o": "sk_sql", "source": "model" },
+  { "s": "cand_maria", "p": "knows", "o": "sk_docker", "source": "model" },
+  { "s": "cand_alex", "p": "knows", "o": "sk_java", "source": "model" },
+  { "s": "cand_alex", "p": "knows", "o": "sk_git", "source": "model" },
+
+  { "s": "crs_spring", "p": "teaches", "o": "sk_spring", "source": "model" },
+  { "s": "crs_sql", "p": "teaches", "o": "sk_sql", "source": "model" },
+  { "s": "crs_git", "p": "teaches", "o": "sk_git", "source": "model" },
+
+  { "s": "vac_java", "p": "requires_exp", "o": "val_op_2y", "source": "model" },
+  { "s": "vac_python", "p": "requires_exp", "o": "val_op_3y", "source": "model" },
+
+  { "s": "cand_ivan", "p": "has_exp", "o": "val_op_3y", "source": "model" },
+  { "s": "cand_maria", "p": "has_exp", "o": "val_op_3y", "source": "model" },
+  { "s": "cand_alex", "p": "has_exp", "o": "val_op_1y", "source": "model" }
+]

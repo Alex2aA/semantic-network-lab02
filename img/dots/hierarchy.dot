@@ -1,0 +1,99 @@
+digraph SemanticNetwork {
+  rankdir=TB;
+  graph [fontname="Helvetica", labelloc="t", labeljust="c", pad="0.3", nodesep=0.55, ranksep=1.6, newrank=true];
+  node [fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9, color="#37474F", arrowsize=0.7];
+  label="Фрагмент 1. Иерархия классов и принадлежность экземпляров";
+  subgraph cluster_legend {
+    label="Легенда"; fontsize=11; fontname="Helvetica";
+    style="rounded"; color="#90A4AE"; bgcolor="#FAFAFA";
+    lg_class [label="Класс", shape=box, style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0", fontsize=10];
+    lg_inst [label="Экземпляр", shape=ellipse, style=filled, fillcolor="#C8E6C9", color="#2E7D32", fontsize=10];
+    lg_val [label="Значение свойства", shape=note, style=filled, fillcolor="#FFF59D", color="#F9A825", fontsize=10];
+    lg_dir [label="Стрелка = направление факта,\nподпись = тип отношения", shape=plaintext, fontsize=9];
+    lg_class -> lg_inst [style=invis];
+    lg_inst -> lg_val [style=invis];
+    lg_val -> lg_dir [style=invis];
+  }
+  subgraph "cluster_0" {
+    label="Иерархия: вакансии"; fontsize=11; fontname="Helvetica";
+    style="rounded,filled"; fillcolor="#E3F2FD"; color="#78909C";
+    "vacancy" [label="Вакансия\\n[vacancy]", shape="box", style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0"];
+    "vacancy_dev" [label="Вакансия разработчика\\n[vacancy_dev]", shape="box", style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0"];
+    "vacancy_backend" [label="Вакансия бэкенд-разработчика\\n[vacancy_backend]", shape="box", style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0"];
+  }
+  subgraph "cluster_1" {
+    label="Иерархия: навыки"; fontsize=11; fontname="Helvetica";
+    style="rounded,filled"; fillcolor="#E8F5E9"; color="#78909C";
+    "skill" [label="Навык\\n[skill]", shape="box", style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0"];
+    "skill_lang" [label="Язык программирования\\n[skill_lang]", shape="box", style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0"];
+    "skill_fw" [label="Фреймворк\\n[skill_fw]", shape="box", style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0"];
+    "skill_db" [label="Базы данных и языки запросов\\n[skill_db]", shape="box", style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0"];
+    "skill_tool" [label="Инструмент разработки\\n[skill_tool]", shape="box", style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0"];
+  }
+  subgraph "cluster_2" {
+    label="Классы: участники"; fontsize=11; fontname="Helvetica";
+    style="rounded,filled"; fillcolor="#FFF8E1"; color="#78909C";
+    "candidate" [label="Кандидат\\n[candidate]", shape="box", style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0"];
+    "course" [label="Курс\\n[course]", shape="box", style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0"];
+    "course_module" [label="Модуль курса\\n[course_module]", shape="box", style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0"];
+  }
+  subgraph "cluster_3" {
+    label="Экземпляры вакансий"; fontsize=11; fontname="Helvetica";
+    style="rounded,filled"; fillcolor="#F3E5F5"; color="#78909C";
+    "vac_java" [label="Вакансия Java-разработчика\\n[vac_java]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "vac_python" [label="Вакансия Python-разработчика\\n[vac_python]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+  }
+  subgraph "cluster_4" {
+    label="Экземпляры навыков"; fontsize=11; fontname="Helvetica";
+    style="rounded,filled"; fillcolor="#ECEFF1"; color="#78909C";
+    "sk_java" [label="Java\\n[sk_java]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "sk_python" [label="Python\\n[sk_python]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "sk_spring" [label="Spring Framework\\n[sk_spring]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "sk_django" [label="Django\\n[sk_django]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "sk_sql" [label="SQL\\n[sk_sql]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "sk_git" [label="Git\\n[sk_git]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "sk_docker" [label="Docker\\n[sk_docker]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+  }
+  subgraph "cluster_5" {
+    label="Экземпляры: кандидаты"; fontsize=11; fontname="Helvetica";
+    style="rounded,filled"; fillcolor="#E0F7FA"; color="#78909C";
+    "cand_ivan" [label="Кандидат Иван\\n[cand_ivan]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "cand_maria" [label="Кандидат Мария\\n[cand_maria]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "cand_alex" [label="Кандидат Алексей\\n[cand_alex]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+  }
+  subgraph "cluster_6" {
+    label="Экземпляры: курсы и модули"; fontsize=11; fontname="Helvetica";
+    style="rounded,filled"; fillcolor="#FBE9E7"; color="#78909C";
+    "crs_spring" [label="Курс «Spring с нуля»\\n[crs_spring]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "crs_sql" [label="Курс «SQL: практика»\\n[crs_sql]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "crs_git" [label="Курс «Git для разработчиков»\\n[crs_git]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "mod_spring_basics" [label="Модуль «Внедрение зависимостей»\\n[mod_spring_basics]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "mod_sql_practice" [label="Модуль «Запросы и индексы»\\n[mod_sql_practice]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+  }
+  "vacancy_dev" -> "vacancy" [label="подкласс", style=dashed, color="#546E7A"];
+  "vacancy_backend" -> "vacancy_dev" [label="подкласс", style=dashed, color="#546E7A"];
+  "skill_lang" -> "skill" [label="подкласс", style=dashed, color="#546E7A"];
+  "skill_fw" -> "skill" [label="подкласс", style=dashed, color="#546E7A"];
+  "skill_db" -> "skill" [label="подкласс", style=dashed, color="#546E7A"];
+  "skill_tool" -> "skill" [label="подкласс", style=dashed, color="#546E7A"];
+  "vac_java" -> "vacancy_backend" [label="экземпляр", style=dashed, color="#546E7A"];
+  "vac_python" -> "vacancy_backend" [label="экземпляр", style=dashed, color="#546E7A"];
+  "sk_java" -> "skill_lang" [label="экземпляр", style=dashed, color="#546E7A"];
+  "sk_python" -> "skill_lang" [label="экземпляр", style=dashed, color="#546E7A"];
+  "sk_spring" -> "skill_fw" [label="экземпляр", style=dashed, color="#546E7A"];
+  "sk_django" -> "skill_fw" [label="экземпляр", style=dashed, color="#546E7A"];
+  "sk_sql" -> "skill_db" [label="экземпляр", style=dashed, color="#546E7A"];
+  "sk_git" -> "skill_tool" [label="экземпляр", style=dashed, color="#546E7A"];
+  "sk_docker" -> "skill_tool" [label="экземпляр", style=dashed, color="#546E7A"];
+  "cand_ivan" -> "candidate" [label="экземпляр", style=dashed, color="#546E7A"];
+  "cand_maria" -> "candidate" [label="экземпляр", style=dashed, color="#546E7A"];
+  "cand_alex" -> "candidate" [label="экземпляр", style=dashed, color="#546E7A"];
+  "crs_spring" -> "course" [label="экземпляр", style=dashed, color="#546E7A"];
+  "crs_sql" -> "course" [label="экземпляр", style=dashed, color="#546E7A"];
+  "crs_git" -> "course" [label="экземпляр", style=dashed, color="#546E7A"];
+  "mod_spring_basics" -> "course_module" [label="экземпляр", style=dashed, color="#546E7A"];
+  "mod_sql_practice" -> "course_module" [label="экземпляр", style=dashed, color="#546E7A"];
+  "mod_spring_basics" -> "crs_spring" [label="часть", style=dashed, color="#546E7A"];
+  "mod_sql_practice" -> "crs_sql" [label="часть", style=dashed, color="#546E7A"];
+}
