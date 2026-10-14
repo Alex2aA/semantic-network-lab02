@@ -3,7 +3,7 @@
     "id": "model",
     "title": "Модельное допущение",
     "locator": "—",
-    "note": "Авторское допущение: вымышленные вакансии, кандидаты и курсы учебного примера, а также авторские дефиниции классов. Не является внешним фактом."
+    "note": "Авторское допущение: вымышленные проекты, требования, критерии и рекомендации учебного примера, а также авторские дефиниции классов. Не является внешним фактом."
   },
   {
     "id": "s_tgpu",
@@ -30,45 +30,45 @@
     "note": "Модели графов, запросы и качество данных — для проверки структуры."
   },
   {
-    "id": "s_oracle",
-    "title": "The Java Tutorials (Oracle)",
-    "locator": "https://docs.oracle.com/javase/8/docs/",
-    "note": "Java как язык программирования платформы JVM."
+    "id": "s_postgresql",
+    "title": "PostgreSQL Documentation",
+    "locator": "https://www.postgresql.org/docs/",
+    "note": "PostgreSQL: реляционная СУБД, транзакции, условия лицензирования."
   },
   {
-    "id": "s_python",
-    "title": "Python.org — About Python",
-    "locator": "https://www.python.org/",
-    "note": "Python как язык программирования."
+    "id": "s_mysql",
+    "title": "MySQL Documentation",
+    "locator": "https://dev.mysql.com/doc/",
+    "note": "MySQL: реляционная СУБД открытого кода."
   },
   {
-    "id": "s_spring",
-    "title": "Spring Framework Documentation",
-    "locator": "https://docs.spring.io/spring-framework/",
-    "note": "Spring Framework как фреймворк прикладной разработки на Java."
+    "id": "s_sqlite",
+    "title": "SQLite Documentation",
+    "locator": "https://sqlite.org/docs.html",
+    "note": "SQLite: встраиваемая реляционная СУБД."
   },
   {
-    "id": "s_django",
-    "title": "Django Documentation",
-    "locator": "https://docs.djangoproject.com/",
-    "note": "Django как веб-фреймворк на Python."
+    "id": "s_oracle_db",
+    "title": "Oracle Database Documentation",
+    "locator": "https://docs.oracle.com/en/database/oracle/",
+    "note": "Oracle Database: коммерческая реляционная СУБД."
   },
   {
-    "id": "s_postgres",
-    "title": "PostgreSQL Documentation — The SQL Language",
-    "locator": "https://www.postgresql.org/docs/current/tutorial-sql.html",
-    "note": "SQL как язык запросов к реляционным базам данных."
+    "id": "s_mongodb",
+    "title": "MongoDB Documentation",
+    "locator": "https://www.mongodb.com/docs/",
+    "note": "MongoDB: документо-ориентированная СУБД."
   },
   {
-    "id": "s_gitscm",
-    "title": "Pro Git book (git-scm.com)",
-    "locator": "https://git-scm.com/book/en/v2",
-    "note": "Git как распределённая система контроля версий."
+    "id": "s_redis",
+    "title": "Redis Documentation",
+    "locator": "https://redis.io/docs/",
+    "note": "Redis: СУБД ключ–значение с хранением в памяти."
   },
   {
-    "id": "s_docker",
-    "title": "Docker Documentation",
-    "locator": "https://docs.docker.com/",
-    "note": "Docker как платформа контейнеризации."
+    "id": "s_neo4j",
+    "title": "Neo4j Documentation",
+    "locator": "https://neo4j.com/docs/",
+    "note": "Neo4j: графовая СУБД."
   }
 ]

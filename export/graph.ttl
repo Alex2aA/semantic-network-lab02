@@ -3,239 +3,305 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sem: <https://example.org/semnet/vocab/> .
 
-ns1:candidate a rdfs:Class ;
-    rdfs:label "Кандидат"@ru ;
-    sem:definition "Человек, рассматривающийся на вакансию; имеет опыт работы и набор навыков."@ru .
+ns1:criterion a rdfs:Class ;
+    rdfs:label "Критерий выбора"@ru ;
+    sem:definition "Параметр, по которому сравниваются кандидатные СУБД при выборе для проекта."@ru .
 
-ns1:course a rdfs:Class ;
-    rdfs:label "Курс"@ru ;
-    sem:definition "Образовательная программа, разделённая на модули и обучающая определённым навыкам."@ru .
-
-ns1:course_module a rdfs:Class ;
-    rdfs:label "Модуль курса"@ru ;
-    sem:definition "Логическая часть курса, посвящённая одной теме."@ru .
-
-ns1:skill a rdfs:Class ;
-    rdfs:label "Навык"@ru ;
-    sem:definition "Умение, необходимое для вакансии или имеющееся у кандидата; множество навыков."@ru .
-
-ns1:skill_db a rdfs:Class ;
-    rdfs:label "Базы данных и языки запросов"@ru ;
-    rdfs:subClassOf ns1:skill ;
-    sem:definition "Технологии хранения данных: СУБД и языки запросов к ним."@ru ;
+ns1:criterion_data a rdfs:Class ;
+    rdfs:label "Критерий модели данных"@ru ;
+    rdfs:subClassOf ns1:criterion ;
+    sem:definition "Критерий, связанный с моделью данных и форматом хранения."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:skill_fw a rdfs:Class ;
-    rdfs:label "Фреймворк"@ru ;
-    rdfs:subClassOf ns1:skill ;
-    sem:definition "Программный фреймворк: набор библиотек и инструментов поверх языка программирования."@ru ;
+ns1:criterion_ops a rdfs:Class ;
+    rdfs:label "Критерий эксплуатации"@ru ;
+    rdfs:subClassOf ns1:criterion ;
+    sem:definition "Критерий, связанный с лицензированием, стоимостью и сложностью эксплуатации."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:skill_lang a rdfs:Class ;
-    rdfs:label "Язык программирования"@ru ;
-    rdfs:subClassOf ns1:skill ;
-    sem:definition "Язык программирования или запросов, входящий в навыки разработчика."@ru ;
+ns1:criterion_perf a rdfs:Class ;
+    rdfs:label "Критерий производительности"@ru ;
+    rdfs:subClassOf ns1:criterion ;
+    sem:definition "Критерий, связанный с производительностью системы хранения."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:skill_tool a rdfs:Class ;
-    rdfs:label "Инструмент разработки"@ru ;
-    rdfs:subClassOf ns1:skill ;
-    sem:definition "Инструмент разработки и эксплуатации кода: контроль версий, контейнеризация и т. п."@ru ;
+ns1:criterion_scale a rdfs:Class ;
+    rdfs:label "Критерий масштабирования"@ru ;
+    rdfs:subClassOf ns1:criterion_perf ;
+    sem:definition "Критерий горизонтального масштабирования под растущей нагрузкой."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:vacancy a rdfs:Class ;
-    rdfs:label "Вакансия"@ru ;
-    sem:definition "Открытая позиция в компании: множество объектов, сходных по роли и требованиям."@ru .
+ns1:dbms a rdfs:Class ;
+    rdfs:label "СУБД"@ru ;
+    sem:definition "Программная система для создания, хранения и обработки данных, доступной множеству пользователей."@ru .
 
-ns1:vacancy_backend a rdfs:Class ;
-    rdfs:label "Вакансия бэкенд-разработчика"@ru ;
-    rdfs:subClassOf ns1:vacancy_dev ;
-    sem:definition "Вакансия разработчика серверной части приложения."@ru ;
+ns1:dbms_doc a rdfs:Class ;
+    rdfs:label "Документо-ориентированная СУБД"@ru ;
+    rdfs:subClassOf ns1:dbms ;
+    sem:definition "СУБД, хранящая данные в виде документов (JSON/BSON) без жёсткой схемы."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:vacancy_dev a rdfs:Class ;
-    rdfs:label "Вакансия разработчика"@ru ;
-    rdfs:subClassOf ns1:vacancy ;
-    sem:definition "Вакансия на позицию разработчика программного обеспечения."@ru ;
+ns1:dbms_graph a rdfs:Class ;
+    rdfs:label "Графовая СУБД"@ru ;
+    rdfs:subClassOf ns1:dbms ;
+    sem:definition "СУБД, хранящая сущности как вершины и рёбра и оптимизированная под обход связей."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:cand_alex a ns1:candidate,
+ns1:dbms_kv a rdfs:Class ;
+    rdfs:label "СУБД ключ–значение"@ru ;
+    rdfs:subClassOf ns1:dbms ;
+    sem:definition "СУБД пар «ключ–значение» для простого и быстрого доступа к значениям по ключу."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:dbms_oltp a rdfs:Class ;
+    rdfs:label "Операционная (OLTP) СУБД"@ru ;
+    rdfs:subClassOf ns1:dbms_rel ;
+    sem:definition "Реляционная СУБД для транзакционных нагрузок: много коротких операций записи и чтения."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:dbms_rel a rdfs:Class ;
+    rdfs:label "Реляционная СУБД"@ru ;
+    rdfs:subClassOf ns1:dbms ;
+    sem:definition "СУБД, данные которой организованы в таблицы с фиксированной схемой и связями между ними."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:project a rdfs:Class ;
+    rdfs:label "Проект"@ru ;
+    sem:definition "Информационная система, для которой подбирается СУБД."@ru .
+
+ns1:requirement a rdfs:Class ;
+    rdfs:label "Требование проекта"@ru ;
+    sem:definition "Требование проекта к системе хранения данных."@ru .
+
+ns1:crit_license a ns1:criterion_ops,
         sem:Instance ;
-    rdfs:label "Кандидат Алексей"@ru ;
-    ns1:has_exp ns1:val_op_1y ;
-    ns1:knows ns1:sk_git,
-        ns1:sk_java ;
-    sem:definition "Начинающий разработчик, владеет Java и Git."@ru ;
+    rdfs:label "Тип лицензирования"@ru ;
+    sem:definition "Условия использования: открытая или коммерческая лицензия."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:cand_ivan a ns1:candidate,
-        sem:Instance ;
-    rdfs:label "Кандидат Иван"@ru ;
-    ns1:has_exp ns1:val_op_3y ;
-    ns1:knows ns1:sk_git,
-        ns1:sk_java,
-        ns1:sk_sql ;
-    sem:definition "Бэкенд-разработчик, владеет Java, SQL и Git."@ru ;
-    sem:source "Модельное допущение" .
+ns1:evaluated_by a rdf:Property ;
+    rdfs:label "оценивается по"@ru ;
+    rdfs:domain ns1:requirement ;
+    rdfs:range ns1:criterion ;
+    sem:meaning "Требование проекта оценивается по критерию выбора СУБД. Читается: «Требование — оценивается по → Критерий»."@ru .
 
-ns1:cand_maria a ns1:candidate,
-        sem:Instance ;
-    rdfs:label "Кандидат Мария"@ru ;
-    ns1:has_exp ns1:val_op_3y ;
-    ns1:knows ns1:sk_docker,
-        ns1:sk_python,
-        ns1:sk_sql ;
-    sem:definition "Бэкенд-разработчик на Python, владеет Python, SQL и Docker."@ru ;
-    sem:source "Модельное допущение" .
-
-ns1:crs_git a ns1:course,
-        sem:Instance ;
-    rdfs:label "Курс «Git для разработчиков»"@ru ;
-    ns1:teaches ns1:sk_git ;
-    sem:definition "Курс по Git: ветвление, слияние, командная работа."@ru ;
-    sem:source "Модельное допущение" .
-
-ns1:has_exp a rdf:Property ;
-    rdfs:label "имеет опыта"@ru ;
-    rdfs:domain ns1:candidate ;
-    sem:meaning "Кандидат имеет указанный опыт работы (значение свойства). Читается: «Кандидат — имеет опыта → Значение»."@ru .
+ns1:has_value a rdf:Property ;
+    rdfs:label "имеет значение"@ru ;
+    rdfs:domain ns1:dbms ;
+    sem:meaning "СУБД имеет значение свойства (лицензия, стоимость). Читается: «СУБД — имеет значение → Значение»."@ru .
 
 ns1:instance a rdf:Property ;
     rdfs:label "экземпляр"@ru ;
     sem:meaning "Конкретный объект принадлежит классу (ISA / instance-of). Читается: «A — экземпляр → B»."@ru .
 
-ns1:knows a rdf:Property ;
-    rdfs:label "владеет"@ru ;
-    rdfs:domain ns1:candidate ;
-    rdfs:range ns1:skill ;
-    sem:meaning "Кандидат владеет навыком. Читается: «Кандидат — владеет → Навык»."@ru .
-
-ns1:mod_spring_basics a ns1:course_module,
+ns1:mysql a ns1:dbms_oltp,
         sem:Instance ;
-    rdfs:label "Модуль «Внедрение зависимостей»"@ru ;
-    ns1:part_of ns1:crs_spring ;
-    sem:definition "Модуль курса Spring: контейнер и внедрение зависимостей."@ru ;
+    rdfs:label "MySQL"@ru ;
+    ns1:has_value ns1:val_cost_free,
+        ns1:val_lic_open ;
+    ns1:satisfies ns1:req_acid,
+        ns1:req_scale ;
+    sem:definition "Популярная реляционная СУБД открытого кода."@ru ;
+    sem:source "MySQL Documentation",
+        "Модельное допущение" .
+
+ns1:oracle a ns1:dbms_oltp,
+        sem:Instance ;
+    rdfs:label "Oracle Database"@ru ;
+    ns1:has_value ns1:val_cost_paid,
+        ns1:val_lic_comm ;
+    ns1:satisfies ns1:req_acid,
+        ns1:req_scale ;
+    sem:definition "Коммерческая реляционная СУБД корпоративного класса."@ru ;
+    sem:source "Oracle Database Documentation",
+        "Модельное допущение" .
+
+ns1:presents a rdf:Property ;
+    rdfs:label "предъявляет"@ru ;
+    rdfs:domain ns1:project ;
+    rdfs:range ns1:requirement ;
+    sem:meaning "Проект предъявляет требование к системе хранения данных. Читается: «Проект — предъявляет → Требование»."@ru .
+
+ns1:project_iot a ns1:project,
+        sem:Instance ;
+    rdfs:label "Проект «Сервис телеметрии»"@ru ;
+    ns1:presents ns1:req_latency,
+        ns1:req_scale ;
+    ns1:recommends ns1:mongodb ;
+    sem:definition "Сбор и хранение телеметрии датчиков и устройств."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:mod_sql_practice a ns1:course_module,
+ns1:project_reco a ns1:project,
         sem:Instance ;
-    rdfs:label "Модуль «Запросы и индексы»"@ru ;
-    ns1:part_of ns1:crs_sql ;
-    sem:definition "Модуль курса SQL: сложные запросы и индексы."@ru ;
+    rdfs:label "Проект «Сервис рекомендаций»"@ru ;
+    ns1:presents ns1:req_graph,
+        ns1:req_latency ;
+    ns1:recommends ns1:neo4j ;
+    sem:definition "Подбор рекомендаций на основе связей между объектами."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:part_of a rdf:Property ;
-    rdfs:label "часть"@ru ;
-    rdfs:domain ns1:course_module ;
-    rdfs:range ns1:course ;
-    sem:meaning "Объект A является частью составного объекта B (part-of). Читается: «A — часть → B»."@ru .
-
-ns1:requires a rdf:Property ;
-    rdfs:label "требует"@ru ;
-    rdfs:domain ns1:vacancy ;
-    rdfs:range ns1:skill ;
-    sem:meaning "Вакансия требует навык от кандидата. Читается: «Вакансия — требует → Навык»."@ru .
-
-ns1:requires_exp a rdf:Property ;
-    rdfs:label "требует опыта"@ru ;
-    rdfs:domain ns1:vacancy ;
-    sem:meaning "Вакансия задаёт требуемый опыт работы в виде значения свойства. Читается: «Вакансия — требует опыта → Значение»."@ru .
-
-ns1:sk_django a ns1:skill_fw,
+ns1:project_shop a ns1:project,
         sem:Instance ;
-    rdfs:label "Django"@ru ;
-    sem:definition "Высокоуровневый веб-фреймворк на Python."@ru ;
-    sem:source "Django Documentation" .
+    rdfs:label "Проект «Онлайн-магазин»"@ru ;
+    ns1:presents ns1:req_acid,
+        ns1:req_docs,
+        ns1:req_latency,
+        ns1:req_scale ;
+    ns1:recommends ns1:postgresql ;
+    sem:definition "Интернет-магазин: каталог товаров, заказы, оплата."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:recommends a rdf:Property ;
+    rdfs:label "рекомендует"@ru ;
+    rdfs:domain ns1:project ;
+    rdfs:range ns1:dbms ;
+    sem:meaning "Итоговая рекомендация эксперта: проекту подходит указанная СУБД. Читается: «Проект — рекомендует → СУБД»."@ru .
+
+ns1:redis a ns1:dbms_kv,
+        sem:Instance ;
+    rdfs:label "Redis"@ru ;
+    ns1:has_value ns1:val_cost_free,
+        ns1:val_lic_open ;
+    ns1:satisfies ns1:req_latency,
+        ns1:req_simple_deploy ;
+    sem:definition "СУБД ключ–значение с хранением данных в оперативной памяти."@ru ;
+    sem:source "Redis Documentation",
+        "Модельное допущение" .
+
+ns1:satisfies a rdf:Property ;
+    rdfs:label "удовлетворяет"@ru ;
+    rdfs:domain ns1:dbms ;
+    rdfs:range ns1:requirement ;
+    sem:meaning "СУБД покрывает требование проекта по данным модели. Читается: «СУБД — удовлетворяет → Требование»."@ru .
+
+ns1:sqlite a ns1:dbms_oltp,
+        sem:Instance ;
+    rdfs:label "SQLite"@ru ;
+    ns1:has_value ns1:val_cost_free,
+        ns1:val_lic_open ;
+    ns1:satisfies ns1:req_acid,
+        ns1:req_simple_deploy ;
+    sem:definition "Встраиваемая реляционная СУБД, работающая в одном процессе без сервера."@ru ;
+    sem:source "SQLite Documentation",
+        "Модельное допущение" .
 
 ns1:subclass a rdf:Property ;
     rdfs:label "подкласс"@ru ;
     sem:meaning "Класс A является более частным случаем класса B (AKO / subclass-of). Читается: «A — подкласс → B»."@ru .
 
-ns1:teaches a rdf:Property ;
-    rdfs:label "обучает"@ru ;
-    rdfs:domain ns1:course ;
-    rdfs:range ns1:skill ;
-    sem:meaning "Курс обучает навыку (покрывает его содержанием). Читается: «Курс — обучает → Навык»."@ru .
-
-ns1:vac_java a ns1:vacancy_backend,
+ns1:crit_complexity a ns1:criterion_ops,
         sem:Instance ;
-    rdfs:label "Вакансия Java-разработчика"@ru ;
-    ns1:requires ns1:sk_java,
-        ns1:sk_spring,
-        ns1:sk_sql ;
-    ns1:requires_exp ns1:val_op_2y ;
-    sem:definition "Открытая позиция бэкенд-разработчика на Java и Spring."@ru ;
+    rdfs:label "Сложность эксплуатации"@ru ;
+    sem:definition "Усилия на развёртывание, настройку и поддержку системы."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:vac_python a ns1:vacancy_backend,
+ns1:crit_consistency a ns1:criterion_data,
         sem:Instance ;
-    rdfs:label "Вакансия Python-разработчика"@ru ;
-    ns1:requires ns1:sk_docker,
-        ns1:sk_python,
-        ns1:sk_sql ;
-    ns1:requires_exp ns1:val_op_3y ;
-    sem:definition "Открытая позиция бэкенд-разработчика на Python."@ru ;
+    rdfs:label "Согласованность данных"@ru ;
+    sem:definition "Модель гарантий при одновременной записи и чтении."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:crs_spring a ns1:course,
+ns1:mongodb a ns1:dbms_doc,
         sem:Instance ;
-    rdfs:label "Курс «Spring с нуля»"@ru ;
-    ns1:teaches ns1:sk_spring ;
-    sem:definition "Онлайн-курс по Spring: от базовой конфигурации до внедрения зависимостей."@ru ;
+    rdfs:label "MongoDB"@ru ;
+    ns1:has_value ns1:val_cost_free,
+        ns1:val_lic_open ;
+    ns1:satisfies ns1:req_docs,
+        ns1:req_latency,
+        ns1:req_scale ;
+    sem:definition "Документо-ориентированная СУБД с гибкой схемой и хранением BSON."@ru ;
+    sem:source "MongoDB Documentation",
+        "Модельное допущение" .
+
+ns1:neo4j a ns1:dbms_graph,
+        sem:Instance ;
+    rdfs:label "Neo4j"@ru ;
+    ns1:has_value ns1:val_cost_free,
+        ns1:val_lic_open ;
+    ns1:satisfies ns1:req_graph ;
+    sem:definition "Графовая СУБД с ядром, ориентированным на обход связей между объектами."@ru ;
+    sem:source "Neo4j Documentation",
+        "Модельное допущение" .
+
+ns1:postgresql a ns1:dbms_oltp,
+        sem:Instance ;
+    rdfs:label "PostgreSQL"@ru ;
+    ns1:has_value ns1:val_cost_free,
+        ns1:val_lic_open ;
+    ns1:satisfies ns1:req_acid,
+        ns1:req_docs,
+        ns1:req_scale ;
+    sem:definition "Свободная реляционная СУБД с развитой системой транзакций и расширений."@ru ;
+    sem:source "PostgreSQL Documentation",
+        "Модельное допущение" .
+
+ns1:val_cost_paid a sem:Value ;
+    rdfs:label "Стоимость: платная"@ru ;
+    sem:definition "Значение свойства «стоимость» — требуется оплата лицензии."@ru .
+
+ns1:val_lic_comm a sem:Value ;
+    rdfs:label "Лицензия: коммерческая"@ru ;
+    sem:definition "Значение свойства «лицензия» — использование по коммерческому контракту."@ru .
+
+ns1:crit_latency a ns1:criterion_scale,
+        sem:Instance ;
+    rdfs:label "Задержка операций"@ru ;
+    sem:definition "Время отклика типовых операций чтения и записи."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:crs_sql a ns1:course,
+ns1:crit_model a ns1:criterion_data,
         sem:Instance ;
-    rdfs:label "Курс «SQL: практика»"@ru ;
-    ns1:teaches ns1:sk_sql ;
-    sem:definition "Практический курс SQL: запросы, индексы, оптимизация."@ru ;
+    rdfs:label "Модель данных и формат"@ru ;
+    sem:definition "Способ представления данных и работа со схемой."@ru ;
     sem:source "Модельное допущение" .
 
-ns1:val_op_1y a sem:Value ;
-    rdfs:label "Опыт: 1 год"@ru ;
-    sem:definition "Значение свойства «опыт работы» — 1 год."@ru .
-
-ns1:val_op_2y a sem:Value ;
-    rdfs:label "Опыт: 2 года"@ru ;
-    sem:definition "Значение свойства «опыт работы» — 2 года."@ru .
-
-ns1:sk_docker a ns1:skill_tool,
+ns1:req_graph a ns1:requirement,
         sem:Instance ;
-    rdfs:label "Docker"@ru ;
-    sem:definition "Платформа контейнеризации приложений."@ru ;
-    sem:source "Docker Documentation" .
+    rdfs:label "Граф связей"@ru ;
+    ns1:evaluated_by ns1:crit_model ;
+    sem:definition "Хранение и быстрый обход связей между объектами."@ru ;
+    sem:source "Модельное допущение" .
 
-ns1:sk_python a ns1:skill_lang,
+ns1:req_simple_deploy a ns1:requirement,
         sem:Instance ;
-    rdfs:label "Python"@ru ;
-    sem:definition "Интерпретируемый язык программирования общего назначения."@ru ;
-    sem:source "Python.org — About Python" .
+    rdfs:label "Простое развёртывание"@ru ;
+    ns1:evaluated_by ns1:crit_complexity ;
+    sem:definition "Запуск на одной машине без отдельного кластера."@ru ;
+    sem:source "Модельное допущение" .
 
-ns1:sk_spring a ns1:skill_fw,
+ns1:req_docs a ns1:requirement,
         sem:Instance ;
-    rdfs:label "Spring Framework"@ru ;
-    sem:definition "Фреймворк прикладной разработки на Java."@ru ;
-    sem:source "Spring Framework Documentation" .
+    rdfs:label "Хранение документов"@ru ;
+    ns1:evaluated_by ns1:crit_model ;
+    sem:definition "Структурированные документы переменной формы (JSON)."@ru ;
+    sem:source "Модельное допущение" .
 
-ns1:sk_git a ns1:skill_tool,
+ns1:req_acid a ns1:requirement,
         sem:Instance ;
-    rdfs:label "Git"@ru ;
-    sem:definition "Распределённая система контроля версий."@ru ;
-    sem:source "Pro Git book (git-scm.com)" .
+    rdfs:label "Транзакции ACID"@ru ;
+    ns1:evaluated_by ns1:crit_consistency ;
+    sem:definition "Гарантии целостности данных при конкурентной записи."@ru ;
+    sem:source "Модельное допущение" .
 
-ns1:sk_java a ns1:skill_lang,
+ns1:req_latency a ns1:requirement,
         sem:Instance ;
-    rdfs:label "Java"@ru ;
-    sem:definition "Статически типизированный язык программирования платформы JVM."@ru ;
-    sem:source "The Java Tutorials (Oracle)" .
+    rdfs:label "Низкая задержка чтения"@ru ;
+    ns1:evaluated_by ns1:crit_latency ;
+    sem:definition "Быстрый отклик системы на операции чтения."@ru ;
+    sem:source "Модельное допущение" .
 
-ns1:val_op_3y a sem:Value ;
-    rdfs:label "Опыт: 3 года"@ru ;
-    sem:definition "Значение свойства «опыт работы» — 3 года."@ru .
-
-ns1:sk_sql a ns1:skill_db,
+ns1:req_scale a ns1:requirement,
         sem:Instance ;
-    rdfs:label "SQL"@ru ;
-    sem:definition "Стандартный язык запросов к реляционным базам данных."@ru ;
-    sem:source "PostgreSQL Documentation — The SQL Language" .
+    rdfs:label "Горизонтальное масштабирование"@ru ;
+    ns1:evaluated_by ns1:crit_latency ;
+    sem:definition "Распределение нагрузки на несколько узлов кластера."@ru ;
+    sem:source "Модельное допущение" .
+
+ns1:val_cost_free a sem:Value ;
+    rdfs:label "Стоимость: бесплатная"@ru ;
+    sem:definition "Значение свойства «стоимость» — нет платы за использование."@ru .
+
+ns1:val_lic_open a sem:Value ;
+    rdfs:label "Лицензия: открытая"@ru ;
+    sem:definition "Значение свойства «лицензия» — свободное использование по открытой лицензии."@ru .
 

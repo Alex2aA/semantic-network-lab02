@@ -88,14 +88,16 @@ def _cmd_render(net, args) -> int:
         edge_relations = spec.get("edge_relations")
         title = args.title or spec["title"]
         out = Path(args.out) if args.out else IMG_DIR / f"{args.fragment}.png"
+        rankdir = spec.get("rankdir", "TB")
     else:
         node_ids = args.nodes or None
         clusters = None
         edge_relations = None
         title = args.title
         out = Path(args.out) if args.out else IMG_DIR / "custom.png"
+        rankdir = "TB"
     path = render_graph(net, out, node_ids=node_ids, title=title, clusters=clusters,
-                        edge_relations=edge_relations)
+                        edge_relations=edge_relations, rankdir=rankdir)
     print(f"Изображение сохранено: {path}")
     return 0
 
@@ -107,9 +109,9 @@ def _cmd_export_rdf(net, args) -> int:
     path = export_ttl(net, out)
     print(f"RDF/Turtle сохранён: {path}")
     rows = sparql_demo(net)
-    print("SPARQL-демо (требования вакансии Java-разработчика):")
+    print("SPARQL-демо (СУБД, покрывающие требование «Транзакции ACID»):")
     for row in rows:
-        print(f"  {row['vacancy']} -> {row['skill']}")
+        print(f"  {row['dbms']} -> {row['requirement']}")
     if not args.no_shacl:
         report = shacl_check(net)
         print("SHACL-проверка: " + ("соответствует" if report["conforms"]
@@ -157,6 +159,9 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("export-rdf", help="экспорт в RDF/Turtle + SPARQL + SHACL")
     p.add_argument("--out", help="путь к graph.ttl")
     p.add_argument("--no-shacl", action="store_true", help="пропустить SHACL-проверку")
+
+    p = sub.add_parser("interactive", help="собрать интерактивный interactive.html")
+    p.add_argument("--out", help="путь к HTML-файлу")
     return parser
 
 
@@ -185,6 +190,13 @@ def main(argv=None) -> int:
             return _cmd_render(net, args)
         if args.command == "export-rdf":
             return _cmd_export_rdf(net, args)
+        if args.command == "interactive":
+            from .interactive import DEFAULT_OUT, generate
+            out = generate(net, Path(args.out) if args.out else DEFAULT_OUT)
+            print(f"Интерактивная схема сохранена: {out}")
+            print("Откройте файл в браузере: фильтр по типу отношения, "
+                  "кнопки Q1–Q5, клик по узлу — его соседи.")
+            return 0
     except (UnknownNodeError, UnknownRelationError) as exc:
         print(f"Ошибка: {exc}", file=sys.stderr)
         return 2

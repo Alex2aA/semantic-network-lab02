@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Семантическая сеть — интерактивная фильтрация</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  body { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+         margin: 0; display: flex; flex-direction: column; height: 100vh; }
+  header { padding: 10px 16px; border-bottom: 1px solid #ccc; background: #f7f9fb; }
+  header h1 { font-size: 16px; margin: 0 0 8px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  select, button { font-size: 13px; padding: 4px 8px; }
+  button.q { background: #e3f2fd; border: 1px solid #90caf9; border-radius: 4px;
+             cursor: pointer; }
+  button.q:hover { background: #bbdefb; }
+  #info { padding: 8px 16px; background: #fff8e1; border-bottom: 1px solid #ccc;
+          font-size: 13px; min-height: 18px; }
+  /* min-height:0 — иначе flex-элемент растёт по содержимому (canvas),
+     его высота уходит за предел браузера и отрисовка становится пустой */
+  #net { flex: 1; min-height: 0; overflow: hidden; }
+  .legend { font-size: 12px; color: #555; margin-top: 6px; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+         margin-right: 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Семантическая сеть: интерактивная фильтрация и выделение пути</h1>
+  <div class="controls">
+    <label>Тип отношения:
+      <select id="relFilter"><option value="all">все отношения</option>
+      <option value="subclass">подкласс (subclass)</option>
+      <option value="instance">экземпляр (instance)</option>
+      <option value="presents">предъявляет (presents)</option>
+      <option value="satisfies">удовлетворяет (satisfies)</option>
+      <option value="evaluated_by">оценивается по (evaluated_by)</option>
+      <option value="has_value">имеет значение (has_value)</option>
+      <option value="recommends">рекомендует (recommends)</option></select>
+    </label>
+    <label><input type="checkbox" id="hideOthers"> скрыть узлы без видимых дуг</label>
+    <button id="reset">Сбросить</button>
+    <span id="qButtons"></span>
+  </div>
+  <div class="legend">
+    <span class="dot" style="background:#90caf9;border:1px solid #1565c0"></span>класс
+    <span class="dot" style="background:#a5d6a7;border:1px solid #2e7d32"></span>экземпляр
+    <span class="dot" style="background:#ffe082;border:1px solid #f9a825"></span>значение свойства
+    · пунктир — иерархия · красный — выделенный путь или недостающее требование ·
+    клик по узлу — его соседи по типу отношения
+  </div>
+</header>
+<div id="info">Выберите вопрос или тип отношения.</div>
+<div id="net"></div>
+<script>
+const RAW_NODES = [{"id": "dbms", "kind": "class", "label": "СУБД", "definition": "Программная система для создания, хранения и обработки данных, доступной множеству пользователей."}, {"id": "dbms_rel", "kind": "class", "label": "Реляционная СУБД", "definition": "СУБД, данные которой организованы в таблицы с фиксированной схемой и связями между ними."}, {"id": "dbms_oltp", "kind": "class", "label": "Операционная (OLTP) СУБД", "definition": "Реляционная СУБД для транзакционных нагрузок: много коротких операций записи и чтения."}, {"id": "dbms_doc", "kind": "class", "label": "Документо-ориентированная СУБД", "definition": "СУБД, хранящая данные в виде документов (JSON/BSON) без жёсткой схемы."}, {"id": "dbms_kv", "kind": "class", "label": "СУБД ключ–значение", "definition": "СУБД пар «ключ–значение» для простого и быстрого доступа к значениям по ключу."}, {"id": "dbms_graph", "kind": "class", "label": "Графовая СУБД", "definition": "СУБД, хранящая сущности как вершины и рёбра и оптимизированная под обход связей."}, {"id": "criterion", "kind": "class", "label": "Критерий выбора", "definition": "Параметр, по которому сравниваются кандидатные СУБД при выборе для проекта."}, {"id": "criterion_data", "kind": "class", "label": "Критерий модели данных", "definition": "Критерий, связанный с моделью данных и форматом хранения."}, {"id": "criterion_perf", "kind": "class", "label": "Критерий производительности", "definition": "Критерий, связанный с производительностью системы хранения."}, {"id": "criterion_scale", "kind": "class", "label": "Критерий масштабирования", "definition": "Критерий горизонтального масштабирования под растущей нагрузкой."}, {"id": "criterion_ops", "kind": "class", "label": "Критерий эксплуатации", "definition": "Критерий, связанный с лицензированием, стоимостью и сложностью эксплуатации."}, {"id": "project", "kind": "class", "label": "Проект", "definition": "Информационная система, для которой подбирается СУБД."}, {"id": "requirement", "kind": "class", "label": "Требование проекта", "definition": "Требование проекта к системе хранения данных."}, {"id": "postgresql", "kind": "instance", "label": "PostgreSQL", "definition": "Свободная реляционная СУБД с развитой системой транзакций и расширений."}, {"id": "mysql", "kind": "instance", "label": "MySQL", "definition": "Популярная реляционная СУБД открытого кода."}, {"id": "sqlite", "kind": "instance", "label": "SQLite", "definition": "Встраиваемая реляционная СУБД, работающая в одном процессе без сервера."}, {"id": "oracle", "kind": "instance", "label": "Oracle Database", "definition": "Коммерческая реляционная СУБД корпоративного класса."}, {"id": "mongodb", "kind": "instance", "label": "MongoDB", "definition": "Документо-ориентированная СУБД с гибкой схемой и хранением BSON."}, {"id": "redis", "kind": "instance", "label": "Redis", "definition": "СУБД ключ–значение с хранением данных в оперативной памяти."}, {"id": "neo4j", "kind": "instance", "label": "Neo4j", "definition": "Графовая СУБД с ядром, ориентированным на обход связей между объектами."}, {"id": "project_shop", "kind": "instance", "label": "Проект «Онлайн-магазин»", "definition": "Интернет-магазин: каталог товаров, заказы, оплата."}, {"id": "project_iot", "kind": "instance", "label": "Проект «Сервис телеметрии»", "definition": "Сбор и хранение телеметрии датчиков и устройств."}, {"id": "project_reco", "kind": "instance", "label": "Проект «Сервис рекомендаций»", "definition": "Подбор рекомендаций на основе связей между объектами."}, {"id": "req_acid", "kind": "instance", "label": "Транзакции ACID", "definition": "Гарантии целостности данных при конкурентной записи."}, {"id": "req_docs", "kind": "instance", "label": "Хранение документов", "definition": "Структурированные документы переменной формы (JSON)."}, {"id": "req_scale", "kind": "instance", "label": "Горизонтальное масштабирование", "definition": "Распределение нагрузки на несколько узлов кластера."}, {"id": "req_graph", "kind": "instance", "label": "Граф связей", "definition": "Хранение и быстрый обход связей между объектами."}, {"id": "req_latency", "kind": "instance", "label": "Низкая задержка чтения", "definition": "Быстрый отклик системы на операции чтения."}, {"id": "req_simple_deploy", "kind": "instance", "label": "Простое развёртывание", "definition": "Запуск на одной машине без отдельного кластера."}, {"id": "crit_consistency", "kind": "instance", "label": "Согласованность данных", "definition": "Модель гарантий при одновременной записи и чтении."}, {"id": "crit_model", "kind": "instance", "label": "Модель данных и формат", "definition": "Способ представления данных и работа со схемой."}, {"id": "crit_latency", "kind": "instance", "label": "Задержка операций", "definition": "Время отклика типовых операций чтения и записи."}, {"id": "crit_license", "kind": "instance", "label": "Тип лицензирования", "definition": "Условия использования: открытая или коммерческая лицензия."}, {"id": "crit_complexity", "kind": "instance", "label": "Сложность эксплуатации", "definition": "Усилия на развёртывание, настройку и поддержку системы."}, {"id": "val_lic_open", "kind": "value", "label": "Лицензия: открытая", "definition": "Значение свойства «лицензия» — свободное использование по открытой лицензии."}, {"id": "val_lic_comm", "kind": "value", "label": "Лицензия: коммерческая", "definition": "Значение свойства «лицензия» — использование по коммерческому контракту."}, {"id": "val_cost_free", "kind": "value", "label": "Стоимость: бесплатная", "definition": "Значение свойства «стоимость» — нет платы за использование."}, {"id": "val_cost_paid", "kind": "value", "label": "Стоимость: платная", "definition": "Значение свойства «стоимость» — требуется оплата лицензии."}];
+const RAW_EDGES = [{"s": "dbms_rel", "o": "dbms", "p": "subclass", "label": "подкласс", "dashed": true}, {"s": "dbms_oltp", "o": "dbms_rel", "p": "subclass", "label": "подкласс", "dashed": true}, {"s": "dbms_doc", "o": "dbms", "p": "subclass", "label": "подкласс", "dashed": true}, {"s": "dbms_kv", "o": "dbms", "p": "subclass", "label": "подкласс", "dashed": true}, {"s": "dbms_graph", "o": "dbms", "p": "subclass", "label": "подкласс", "dashed": true}, {"s": "criterion_data", "o": "criterion", "p": "subclass", "label": "подкласс", "dashed": true}, {"s": "criterion_perf", "o": "criterion", "p": "subclass", "label": "подкласс", "dashed": true}, {"s": "criterion_scale", "o": "criterion_perf", "p": "subclass", "label": "подкласс", "dashed": true}, {"s": "criterion_ops", "o": "criterion", "p": "subclass", "label": "подкласс", "dashed": true}, {"s": "postgresql", "o": "dbms_oltp", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "mysql", "o": "dbms_oltp", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "sqlite", "o": "dbms_oltp", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "oracle", "o": "dbms_oltp", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "mongodb", "o": "dbms_doc", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "redis", "o": "dbms_kv", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "neo4j", "o": "dbms_graph", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "project_shop", "o": "project", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "project_iot", "o": "project", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "project_reco", "o": "project", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "req_acid", "o": "requirement", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "req_docs", "o": "requirement", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "req_scale", "o": "requirement", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "req_graph", "o": "requirement", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "req_latency", "o": "requirement", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "req_simple_deploy", "o": "requirement", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "crit_consistency", "o": "criterion_data", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "crit_model", "o": "criterion_data", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "crit_latency", "o": "criterion_scale", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "crit_license", "o": "criterion_ops", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "crit_complexity", "o": "criterion_ops", "p": "instance", "label": "экземпляр", "dashed": true}, {"s": "project_shop", "o": "req_acid", "p": "presents", "label": "предъявляет", "dashed": false}, {"s": "project_shop", "o": "req_docs", "p": "presents", "label": "предъявляет", "dashed": false}, {"s": "project_shop", "o": "req_scale", "p": "presents", "label": "предъявляет", "dashed": false}, {"s": "project_shop", "o": "req_latency", "p": "presents", "label": "предъявляет", "dashed": false}, {"s": "project_iot", "o": "req_scale", "p": "presents", "label": "предъявляет", "dashed": false}, {"s": "project_iot", "o": "req_latency", "p": "presents", "label": "предъявляет", "dashed": false}, {"s": "project_reco", "o": "req_graph", "p": "presents", "label": "предъявляет", "dashed": false}, {"s": "project_reco", "o": "req_latency", "p": "presents", "label": "предъявляет", "dashed": false}, {"s": "postgresql", "o": "req_acid", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "postgresql", "o": "req_docs", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "postgresql", "o": "req_scale", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "mysql", "o": "req_acid", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "mysql", "o": "req_scale", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "sqlite", "o": "req_acid", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "sqlite", "o": "req_simple_deploy", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "oracle", "o": "req_acid", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "oracle", "o": "req_scale", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "mongodb", "o": "req_docs", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "mongodb", "o": "req_scale", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "mongodb", "o": "req_latency", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "redis", "o": "req_latency", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "redis", "o": "req_simple_deploy", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "neo4j", "o": "req_graph", "p": "satisfies", "label": "удовлетворяет", "dashed": false}, {"s": "req_acid", "o": "crit_consistency", "p": "evaluated_by", "label": "оценивается по", "dashed": false}, {"s": "req_docs", "o": "crit_model", "p": "evaluated_by", "label": "оценивается по", "dashed": false}, {"s": "req_scale", "o": "crit_latency", "p": "evaluated_by", "label": "оценивается по", "dashed": false}, {"s": "req_graph", "o": "crit_model", "p": "evaluated_by", "label": "оценивается по", "dashed": false}, {"s": "req_latency", "o": "crit_latency", "p": "evaluated_by", "label": "оценивается по", "dashed": false}, {"s": "req_simple_deploy", "o": "crit_complexity", "p": "evaluated_by", "label": "оценивается по", "dashed": false}, {"s": "postgresql", "o": "val_lic_open", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "postgresql", "o": "val_cost_free", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "mysql", "o": "val_lic_open", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "mysql", "o": "val_cost_free", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "sqlite", "o": "val_lic_open", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "sqlite", "o": "val_cost_free", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "oracle", "o": "val_lic_comm", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "oracle", "o": "val_cost_paid", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "mongodb", "o": "val_lic_open", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "mongodb", "o": "val_cost_free", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "redis", "o": "val_lic_open", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "redis", "o": "val_cost_free", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "neo4j", "o": "val_lic_open", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "neo4j", "o": "val_cost_free", "p": "has_value", "label": "имеет значение", "dashed": false}, {"s": "project_shop", "o": "postgresql", "p": "recommends", "label": "рекомендует", "dashed": false}, {"s": "project_iot", "o": "mongodb", "p": "recommends", "label": "рекомендует", "dashed": false}, {"s": "project_reco", "o": "neo4j", "p": "recommends", "label": "рекомендует", "dashed": false}];
+const QUESTIONS = [{"id": "Q1", "text": "Q1. Какие СУБД удовлетворяют требованию «Транзакции ACID»?", "answer": "[MySQL, Oracle Database, PostgreSQL, SQLite]", "nodes": ["req_acid", "postgresql", "mysql", "sqlite", "oracle"], "edges": [["postgresql", "satisfies", "req_acid"], ["mysql", "satisfies", "req_acid"], ["sqlite", "satisfies", "req_acid"], ["oracle", "satisfies", "req_acid"]], "path": [], "accent": ["postgresql", "mysql", "sqlite", "oracle"]}, {"id": "Q2", "text": "Q2. Какие требования проекта «Онлайн-магазин» покрыты PostgreSQL?", "answer": "покрыты: [Транзакции ACID, Хранение документов, Горизонтальное масштабирование]; не покрыто: [Низкая задержка чтения]", "nodes": ["project_shop", "postgresql", "req_acid", "req_docs", "req_scale", "req_latency"], "edges": [["project_shop", "presents", "req_acid"], ["project_shop", "presents", "req_docs"], ["project_shop", "presents", "req_scale"], ["project_shop", "presents", "req_latency"], ["postgresql", "satisfies", "req_acid"], ["postgresql", "satisfies", "req_docs"], ["postgresql", "satisfies", "req_scale"]], "path": [], "accent": ["req_latency"]}, {"id": "Q3", "text": "Q3. Какие критерии выбора соответствуют требованиям проекта «Сервис рекомендаций»?", "answer": "[Модель данных и формат, Задержка операций]", "nodes": ["project_reco", "req_graph", "req_latency", "crit_model", "crit_latency"], "edges": [["project_reco", "presents", "req_graph"], ["project_reco", "presents", "req_latency"], ["req_graph", "evaluated_by", "crit_model"], ["req_latency", "evaluated_by", "crit_latency"]], "path": [], "accent": ["crit_model", "crit_latency"]}, {"id": "Q4", "text": "Q4. Какие подклассы у класса «СУБД» и какие СУБД к ним относятся?", "answer": "подклассы: [Графовая СУБД, Документо-ориентированная СУБД, Операционная (OLTP) СУБД, Реляционная СУБД, СУБД ключ–значение]; экземпляры: [MongoDB, MySQL, Neo4j, Oracle Database, PostgreSQL, Redis, SQLite]", "nodes": ["dbms", "dbms_rel", "dbms_oltp", "dbms_doc", "dbms_kv", "dbms_graph", "postgresql", "mysql", "sqlite", "oracle", "mongodb", "redis", "neo4j"], "edges": [["dbms_rel", "subclass", "dbms"], ["dbms_oltp", "subclass", "dbms_rel"], ["dbms_doc", "subclass", "dbms"], ["dbms_kv", "subclass", "dbms"], ["dbms_graph", "subclass", "dbms"], ["postgresql", "instance", "dbms_oltp"], ["mysql", "instance", "dbms_oltp"], ["sqlite", "instance", "dbms_oltp"], ["oracle", "instance", "dbms_oltp"], ["mongodb", "instance", "dbms_doc"], ["redis", "instance", "dbms_kv"], ["neo4j", "instance", "dbms_graph"]], "path": [], "accent": []}, {"id": "Q5", "text": "Q5. Какой путь связывает проект «Сервис рекомендаций» с СУБД Neo4j?", "answer": "Проект «Сервис рекомендаций» —предъявляет→ Граф связей ←удовлетворяет— Neo4j", "nodes": ["project_reco", "req_graph", "neo4j"], "edges": [["project_reco", "presents", "req_graph"], ["neo4j", "satisfies", "req_graph"]], "path": ["project_reco", "req_graph", "neo4j"], "accent": ["project_reco", "req_graph", "neo4j"]}];
+
+const KIND_STYLE = {
+  class:    { color: { background: "#bbdefb", border: "#1565c0" }, shape: "box" },
+  instance: { color: { background: "#c8e6c9", border: "#2e7d32" }, shape: "ellipse" },
+  value:    { color: { background: "#fff59d", border: "#f9a825" }, shape: "note" }
+};
+
+const nodes = new vis.DataSet(RAW_NODES.map(n => {
+  const st = KIND_STYLE[n.kind] || KIND_STYLE.instance;
+  return { id: n.id, label: n.label,
+           title: "[" + n.id + "] " + n.definition, shape: st.shape,
+           color: { background: st.color.background, border: st.color.border,
+                    highlight: { background: "#ffcc80", border: "#e65100" } },
+           font: { size: 13 } };
+}));
+const edges = new vis.DataSet(RAW_EDGES.map((e, i) => ({
+  id: i, from: e.s, to: e.o, relation: e.p, label: e.label,
+  dashes: e.dashed, arrows: "to",
+  color: { color: "#37474f", highlight: "#e65100" },
+  font: { size: 11, align: "middle" }
+})));
+
+const network = new vis.Network(document.getElementById("net"),
+  { nodes, edges },
+  { nodes: { shapeProperties: { useBorderWithImage: true },
+             // drawThreshold:1 — не прятать подписи при автоподгонке всей сети
+             scaling: { label: { drawThreshold: 1 } } },
+    edges: { smooth: { type: "dynamic" }, length: 180,
+             scaling: { label: { drawThreshold: 1 } } },
+    physics: { solver: "forceAtlas2Based",
+               forceAtlas2Based: { gravitationalConstant: -60, springLength: 120 },
+               stabilization: { iterations: 250 } },
+    interaction: { hover: true } });
+
+// После стабилизации — вписать сеть и сразу приблизить до читаемого масштаба:
+// при полном вписывании подпись (13px × масштаб) была бы меньше 4px.
+network.once("stabilizationIterationsDone", () => {
+  network.fit({ animation: false });
+  const s = network.getScale();
+  network.moveTo({ scale: Math.min(1, Math.max(0.7, s * 2)) });
+});
+
+const info = document.getElementById("info");
+const relFilter = document.getElementById("relFilter");
+const hideOthers = document.getElementById("hideOthers");
+let activeQuestion = null;
+
+function baseColor(nid) {
+  const n = RAW_NODES.find(x => x.id === nid);
+  const st = KIND_STYLE[n.kind] || KIND_STYLE.instance;
+  return { background: st.color.background, border: st.color.border,
+           highlight: { background: "#ffcc80", border: "#e65100" } };
+}
+
+function applyFilter() {
+  const rel = relFilter.value;
+  const visibleEdges = [];
+  edges.forEach(e => {
+    const show = rel === "all" || e.relation === rel;
+    visibleEdges.push({ id: e.id, hidden: !show });
+  });
+  edges.update(visibleEdges);
+  if (hideOthers.checked && rel !== "all") {
+    const used = new Set();
+    RAW_EDGES.forEach(e => { if (e.p === rel) { used.add(e.s); used.add(e.o); } });
+    nodes.update(RAW_NODES.map(n => ({ id: n.id, hidden: !used.has(n.id) })));
+  } else {
+    nodes.update(RAW_NODES.map(n => ({ id: n.id, hidden: false })));
+  }
+}
+
+function resetStyles() {
+  nodes.update(RAW_NODES.map(n => ({ id: n.id, color: baseColor(n.id),
+                                     borderWidth: 1, opacity: 1 })));
+  edges.update(edges.getIds().map(id => ({ id, color: { color: "#37474f",
+                                                        highlight: "#e65100" },
+                                           width: 1, hidden:
+                                             relFilter.value !== "all" &&
+                                             edges.get(id).relation !== relFilter.value })));
+}
+
+function showQuestion(q) {
+  activeQuestion = q;
+  resetStyles();
+  const inQ = new Set(q.nodes);
+  nodes.update(RAW_NODES.map(n => ({
+    id: n.id,
+    opacity: inQ.has(n.id) ? 1 : 0.15,
+    borderWidth: inQ.has(n.id) ? 2 : 1
+  })));
+  (q.accent || []).forEach(nid => nodes.update({
+    id: nid, color: { background: "#ffcdd2", border: "#c62828",
+                      highlight: { background: "#ff8a80", border: "#b71c1c" } },
+    borderWidth: 3 }));
+  const key = new Set((q.edges || []).map(e => e[0] + "|" + e[1] + "|" + e[2]));
+  edges.update(edges.getIds().map(id => {
+    const e = edges.get(id);
+    const hit = key.has(e.from + "|" + e.relation + "|" + e.to);
+    return { id, hidden: !hit, width: hit ? 3 : 1,
+             color: hit ? { color: "#c62828", highlight: "#b71c1c" }
+                        : { color: "#37474f", highlight: "#e65100" } };
+  }));
+  info.innerHTML = "<b>" + q.text + "</b><br>Ожидаемый ответ: " + q.answer +
+    (q.path && q.path.length ? "<br>Путь выделен красным: " +
+      q.path.map(nid => RAW_NODES.find(x => x.id === nid).label).join(" → ") : "");
+  // показать выделенные узлы целиком (не дальше масштаба 1, чтобы подписи читались)
+  if (q.nodes && q.nodes.length) {
+    network.fit({ nodes: q.nodes, animation: false });
+    if (network.getScale() > 1) network.moveTo({ scale: 1 });
+  }
+}
+
+network.on("click", params => {
+  if (params.nodes.length !== 1) return;
+  const nid = params.nodes[0];
+  const rel = relFilter.value;
+  const outs = RAW_EDGES.filter(e => e.s === nid && (rel === "all" || e.p === rel));
+  const ins = RAW_EDGES.filter(e => e.o === nid && (rel === "all" || e.p === rel));
+  const node = RAW_NODES.find(n => n.id === nid);
+  info.innerHTML = "<b>" + node.label + "</b> (" + node.kind + ") — " + node.definition +
+    "<br>Идёт по стрелке: " + (outs.length ? outs.map(e => e.label + " → " +
+      RAW_NODES.find(n => n.id === e.o).label).join("; ") : "—") +
+    "<br>Против стрелки: " + (ins.length ? ins.map(e => e.label + " ← " +
+      RAW_NODES.find(n => n.id === e.s).label).join("; ") : "—");
+});
+
+relFilter.addEventListener("change", () => { resetStyles(); applyFilter(); });
+hideOthers.addEventListener("change", applyFilter);
+document.getElementById("reset").addEventListener("click", () => {
+  activeQuestion = null; relFilter.value = "all"; resetStyles(); applyFilter();
+  info.textContent = "Выберите вопрос или тип отношения.";
+});
+QUESTIONS.forEach(q => {
+  const b = document.createElement("button");
+  b.className = "q"; b.textContent = q.id;
+  b.title = q.text;
+  b.onclick = () => showQuestion(q);
+  document.getElementById("qButtons").appendChild(b);
+});
+</script>
+</body>
+</html>

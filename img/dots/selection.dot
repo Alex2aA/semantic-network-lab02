@@ -1,0 +1,86 @@
+digraph SemanticNetwork {
+  rankdir=TB;
+  graph [fontname="Helvetica", labelloc="t", labeljust="c", pad="0.3", nodesep=0.55, ranksep=1.6, newrank=true];
+  node [fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9, color="#37474F", arrowsize=0.7];
+  label="Фрагмент 2. Подбор СУБД: проекты, требования, критерии, СУБД";
+  subgraph cluster_legend {
+    label="Легенда"; fontsize=11; fontname="Helvetica";
+    style="rounded"; color="#90A4AE"; bgcolor="#FAFAFA";
+    lg_class [label="Класс", shape=box, style="rounded,filled", fillcolor="#BBDEFB", color="#1565C0", fontsize=10];
+    lg_inst [label="Экземпляр", shape=ellipse, style=filled, fillcolor="#C8E6C9", color="#2E7D32", fontsize=10];
+    lg_val [label="Значение свойства", shape=note, style=filled, fillcolor="#FFF59D", color="#F9A825", fontsize=10];
+    lg_dir [label="Стрелка = направление факта,\nподпись = тип отношения", shape=plaintext, fontsize=9];
+    lg_class -> lg_inst [style=invis];
+    lg_inst -> lg_val [style=invis];
+    lg_val -> lg_dir [style=invis];
+  }
+  subgraph "cluster_0" {
+    label="Проекты"; fontsize=11; fontname="Helvetica";
+    style="rounded,filled"; fillcolor="#E3F2FD"; color="#78909C";
+    "project_shop" [label="Проект «Онлайн-магазин»\\n[project_shop]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "project_iot" [label="Проект «Сервис телеметрии»\\n[project_iot]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "project_reco" [label="Проект «Сервис рекомендаций»\\n[project_reco]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+  }
+  subgraph "cluster_1" {
+    label="Требования проектов"; fontsize=11; fontname="Helvetica";
+    style="rounded,filled"; fillcolor="#E8F5E9"; color="#78909C";
+    "req_acid" [label="Транзакции ACID\\n[req_acid]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "req_docs" [label="Хранение документов\\n[req_docs]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "req_scale" [label="Горизонтальное масштабирование\\n[req_scale]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "req_graph" [label="Граф связей\\n[req_graph]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "req_latency" [label="Низкая задержка чтения\\n[req_latency]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "req_simple_deploy" [label="Простое развёртывание\\n[req_simple_deploy]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+  }
+  subgraph "cluster_2" {
+    label="Критерии выбора"; fontsize=11; fontname="Helvetica";
+    style="rounded,filled"; fillcolor="#FFF8E1"; color="#78909C";
+    "crit_consistency" [label="Согласованность данных\\n[crit_consistency]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "crit_model" [label="Модель данных и формат\\n[crit_model]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "crit_latency" [label="Задержка операций\\n[crit_latency]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "crit_complexity" [label="Сложность эксплуатации\\n[crit_complexity]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+  }
+  subgraph "cluster_3" {
+    label="Кандидатные СУБД"; fontsize=11; fontname="Helvetica";
+    style="rounded,filled"; fillcolor="#F3E5F5"; color="#78909C";
+    "postgresql" [label="PostgreSQL\\n[postgresql]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "mysql" [label="MySQL\\n[mysql]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "sqlite" [label="SQLite\\n[sqlite]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "oracle" [label="Oracle Database\\n[oracle]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "mongodb" [label="MongoDB\\n[mongodb]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "redis" [label="Redis\\n[redis]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+    "neo4j" [label="Neo4j\\n[neo4j]", shape="ellipse", style="filled", fillcolor="#C8E6C9", color="#2E7D32"];
+  }
+  "project_shop" -> "req_acid" [label="предъявляет"];
+  "project_shop" -> "req_docs" [label="предъявляет"];
+  "project_shop" -> "req_scale" [label="предъявляет"];
+  "project_shop" -> "req_latency" [label="предъявляет"];
+  "project_iot" -> "req_scale" [label="предъявляет"];
+  "project_iot" -> "req_latency" [label="предъявляет"];
+  "project_reco" -> "req_graph" [label="предъявляет"];
+  "project_reco" -> "req_latency" [label="предъявляет"];
+  "postgresql" -> "req_acid" [label="удовлетворяет"];
+  "postgresql" -> "req_docs" [label="удовлетворяет"];
+  "postgresql" -> "req_scale" [label="удовлетворяет"];
+  "mysql" -> "req_acid" [label="удовлетворяет"];
+  "mysql" -> "req_scale" [label="удовлетворяет"];
+  "sqlite" -> "req_acid" [label="удовлетворяет"];
+  "sqlite" -> "req_simple_deploy" [label="удовлетворяет"];
+  "oracle" -> "req_acid" [label="удовлетворяет"];
+  "oracle" -> "req_scale" [label="удовлетворяет"];
+  "mongodb" -> "req_docs" [label="удовлетворяет"];
+  "mongodb" -> "req_scale" [label="удовлетворяет"];
+  "mongodb" -> "req_latency" [label="удовлетворяет"];
+  "redis" -> "req_latency" [label="удовлетворяет"];
+  "redis" -> "req_simple_deploy" [label="удовлетворяет"];
+  "neo4j" -> "req_graph" [label="удовлетворяет"];
+  "req_acid" -> "crit_consistency" [label="оценивается по"];
+  "req_docs" -> "crit_model" [label="оценивается по"];
+  "req_scale" -> "crit_latency" [label="оценивается по"];
+  "req_graph" -> "crit_model" [label="оценивается по"];
+  "req_latency" -> "crit_latency" [label="оценивается по"];
+  "req_simple_deploy" -> "crit_complexity" [label="оценивается по"];
+  "project_shop" -> "postgresql" [label="рекомендует"];
+  "project_iot" -> "mongodb" [label="рекомендует"];
+  "project_reco" -> "neo4j" [label="рекомендует"];
+}

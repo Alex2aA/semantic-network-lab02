@@ -150,6 +150,7 @@ def render_graph(
     save_dot: bool = True,
     clusters: Optional[List] = None,
     edge_relations: Optional[Iterable[str]] = None,
+    rankdir: str = "TB",
 ) -> Path:
     """Рисует сеть по текущим данным: PNG рядом с исходником DOT."""
     if shutil.which("dot") is None:
@@ -159,7 +160,7 @@ def render_graph(
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     dot_src = build_dot(net, node_ids=node_ids, title=title, clusters=clusters,
-                        edge_relations=edge_relations)
+                        edge_relations=edge_relations, rankdir=rankdir)
 
     if save_dot:
         DOT_DIR.mkdir(parents=True, exist_ok=True)
@@ -176,24 +177,35 @@ def render_graph(
 
 # ---------------------------------------------------------------- фрагменты
 
+DBMS_CLASSES = ["dbms", "dbms_rel", "dbms_oltp", "dbms_doc", "dbms_kv", "dbms_graph"]
+CRITERION_CLASSES = ["criterion", "criterion_data", "criterion_perf",
+                     "criterion_scale", "criterion_ops"]
+DBMS_INSTANCES = ["postgresql", "mysql", "sqlite", "oracle", "mongodb", "redis",
+                  "neo4j"]
+PROJECT_INSTANCES = ["project_shop", "project_iot", "project_reco"]
+REQUIREMENT_INSTANCES = ["req_acid", "req_docs", "req_scale", "req_graph",
+                         "req_latency", "req_simple_deploy"]
+CRITERION_INSTANCES = ["crit_consistency", "crit_model", "crit_latency",
+                       "crit_license", "crit_complexity"]
+VALUE_INSTANCES = ["val_lic_open", "val_lic_comm", "val_cost_free", "val_cost_paid"]
+
+
 def overview_nodes(net: SemanticNetwork) -> List[str]:
     """Обзорная схема: все узлы сети."""
     return [n["id"] for n in net.nodes_list]
 
 
 def overview_clusters(net: SemanticNetwork) -> List:
-    """Блоки обзорной схемы: иерархии, предметные группы, значения."""
+    """Блоки обзорной схемы: классы, экземпляры, значения."""
     return [
-        ("Классы: вакансии", ["vacancy", "vacancy_dev", "vacancy_backend"]),
-        ("Классы: навыки", ["skill", "skill_lang", "skill_fw", "skill_db", "skill_tool"]),
-        ("Классы: участники", ["candidate", "course", "course_module"]),
-        ("Вакансии (экземпляры)", ["vac_java", "vac_python"]),
-        ("Навыки (экземпляры)", ["sk_java", "sk_python", "sk_spring", "sk_django",
-                                 "sk_sql", "sk_git", "sk_docker"]),
-        ("Кандидаты", ["cand_ivan", "cand_maria", "cand_alex"]),
-        ("Курсы и модули", ["crs_spring", "crs_sql", "crs_git",
-                            "mod_spring_basics", "mod_sql_practice"]),
-        ("Значения свойства «опыт»", ["val_op_1y", "val_op_2y", "val_op_3y"]),
+        ("Классы: типы СУБД", DBMS_CLASSES),
+        ("Классы: критерии выбора", CRITERION_CLASSES),
+        ("Классы: проект и требования", ["project", "requirement"]),
+        ("СУБД (экземпляры)", DBMS_INSTANCES),
+        ("Проекты", PROJECT_INSTANCES),
+        ("Требования проектов", REQUIREMENT_INSTANCES),
+        ("Критерии (экземпляры)", CRITERION_INSTANCES),
+        ("Значения свойств", VALUE_INSTANCES),
     ]
 
 
@@ -204,38 +216,35 @@ def hierarchy_nodes(net: SemanticNetwork) -> List[str]:
 
 def hierarchy_clusters(net: SemanticNetwork) -> List:
     return [
-        ("Иерархия: вакансии", ["vacancy", "vacancy_dev", "vacancy_backend"]),
-        ("Иерархия: навыки", ["skill", "skill_lang", "skill_fw", "skill_db",
-                              "skill_tool"]),
-        ("Классы: участники", ["candidate", "course", "course_module"]),
-        ("Экземпляры вакансий", ["vac_java", "vac_python"]),
-        ("Экземпляры навыков", ["sk_java", "sk_python", "sk_spring", "sk_django",
-                                "sk_sql", "sk_git", "sk_docker"]),
-        ("Экземпляры: кандидаты", ["cand_ivan", "cand_maria", "cand_alex"]),
-        ("Экземпляры: курсы и модули", ["crs_spring", "crs_sql", "crs_git",
-                                         "mod_spring_basics", "mod_sql_practice"]),
+        ("Иерархия: типы СУБД", DBMS_CLASSES),
+        ("Иерархия: критерии", CRITERION_CLASSES),
+        ("Классы: проект и требования", ["project", "requirement"]),
+        ("Экземпляры: СУБД", DBMS_INSTANCES),
+        ("Экземпляры: проекты", PROJECT_INSTANCES),
+        ("Экземпляры: требования", REQUIREMENT_INSTANCES),
+        ("Экземпляры: критерии", CRITERION_INSTANCES),
     ]
 
 
-def hiring_nodes(net: SemanticNetwork) -> List[str]:
-    """Фрагмент «подбор»: вакансии, навыки, кандидаты, курсы и опыт."""
-    return [
-        "vac_java", "vac_python",
-        "sk_java", "sk_python", "sk_spring", "sk_sql", "sk_git", "sk_docker",
-        "cand_ivan", "cand_maria", "cand_alex",
-        "crs_spring", "crs_sql", "crs_git",
-        "val_op_1y", "val_op_2y", "val_op_3y",
-    ]
+def selection_nodes(net: SemanticNetwork) -> List[str]:
+    """Фрагмент «подбор СУБД»: проекты, требования, критерии и кандидатные СУБД.
+
+    Критерий «Тип лицензирования» не предъявляется требованиями проектов,
+    а значения свойств вынесены в обзорную схему — иначе фрагмент
+    растягивается по горизонтали и мелкие подписи становятся нечитаемыми.
+    """
+    return (PROJECT_INSTANCES + REQUIREMENT_INSTANCES
+            + ["crit_consistency", "crit_model", "crit_latency", "crit_complexity"]
+            + DBMS_INSTANCES)
 
 
-def hiring_clusters(net: SemanticNetwork) -> List:
+def selection_clusters(net: SemanticNetwork) -> List:
     return [
-        ("Вакансии", ["vac_java", "vac_python"]),
-        ("Навыки", ["sk_java", "sk_python", "sk_spring", "sk_sql", "sk_git",
-                    "sk_docker"]),
-        ("Кандидаты", ["cand_ivan", "cand_maria", "cand_alex"]),
-        ("Курсы", ["crs_spring", "crs_sql", "crs_git"]),
-        ("Значения свойства «опыт»", ["val_op_1y", "val_op_2y", "val_op_3y"]),
+        ("Проекты", PROJECT_INSTANCES),
+        ("Требования проектов", REQUIREMENT_INSTANCES),
+        ("Критерии выбора", ["crit_consistency", "crit_model", "crit_latency",
+                             "crit_complexity"]),
+        ("Кандидатные СУБД", DBMS_INSTANCES),
     ]
 
 
@@ -243,17 +252,18 @@ FRAGMENTS = {
     "overview": {
         "nodes": overview_nodes,
         "clusters": overview_clusters,
-        "title": "Обзорная схема семантической сети",
+        "title": "Обзорная схема семантической сети: выбор СУБД для проекта",
     },
     "hierarchy": {
         "nodes": hierarchy_nodes,
         "clusters": hierarchy_clusters,
         "title": "Фрагмент 1. Иерархия классов и принадлежность экземпляров",
-        "edge_relations": ["subclass", "instance", "part_of"],
+        "edge_relations": ["subclass", "instance"],
+        "rankdir": "LR",  # цепочки «экземпляр → класс → общий класс» читаются слева направо
     },
-    "hiring": {
-        "nodes": hiring_nodes,
-        "clusters": hiring_clusters,
-        "title": "Фрагмент 2. Подбор: вакансии, навыки, кандидаты, курсы",
+    "selection": {
+        "nodes": selection_nodes,
+        "clusters": selection_clusters,
+        "title": "Фрагмент 2. Подбор СУБД: проекты, требования, критерии, СУБД",
     },
 }

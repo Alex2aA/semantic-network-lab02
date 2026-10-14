@@ -81,19 +81,19 @@ def export_ttl(net: SemanticNetwork, out_path: Path) -> Path:
 SPARQL_DEMO = """
 PREFIX sem: <https://example.org/semnet/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT ?vacancy ?skill WHERE {
-  ?vacancy sem:requires ?skill .
-  ?vacancy rdfs:label "Вакансия Java-разработчика"@ru .
+SELECT ?dbms ?requirement WHERE {
+  ?dbms sem:satisfies ?requirement .
+  ?requirement rdfs:label "Транзакции ACID"@ru .
 }
 """
 
 
 def sparql_demo(net: SemanticNetwork) -> List[Dict]:
-    """Проверочный SPARQL-запрос: требования вакансии Java-разработчика."""
+    """Проверочный SPARQL-запрос: СУБД, покрывающие требование «Транзакции ACID»."""
     g = build_rdf_graph(net)
     rows = []
     for row in g.query(SPARQL_DEMO):
-        rows.append({"vacancy": str(row.vacancy), "skill": str(row.skill)})
+        rows.append({"dbms": str(row.dbms), "requirement": str(row.requirement)})
     return rows
 
 

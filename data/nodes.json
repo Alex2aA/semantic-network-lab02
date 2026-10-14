@@ -1,219 +1,273 @@
 [
   {
-    "id": "vacancy",
+    "id": "dbms",
     "kind": "class",
-    "label": "Вакансия",
-    "definition": "Открытая позиция в компании: множество объектов, сходных по роли и требованиям.",
+    "label": "СУБД",
+    "definition": "Программная система для создания, хранения и обработки данных, доступной множеству пользователей.",
     "source": "model"
   },
   {
-    "id": "vacancy_dev",
+    "id": "dbms_rel",
     "kind": "class",
-    "label": "Вакансия разработчика",
-    "definition": "Вакансия на позицию разработчика программного обеспечения.",
+    "label": "Реляционная СУБД",
+    "definition": "СУБД, данные которой организованы в таблицы с фиксированной схемой и связями между ними.",
     "source": "model"
   },
   {
-    "id": "vacancy_backend",
+    "id": "dbms_oltp",
     "kind": "class",
-    "label": "Вакансия бэкенд-разработчика",
-    "definition": "Вакансия разработчика серверной части приложения.",
+    "label": "Операционная (OLTP) СУБД",
+    "definition": "Реляционная СУБД для транзакционных нагрузок: много коротких операций записи и чтения.",
     "source": "model"
   },
   {
-    "id": "skill",
+    "id": "dbms_doc",
     "kind": "class",
-    "label": "Навык",
-    "definition": "Умение, необходимое для вакансии или имеющееся у кандидата; множество навыков.",
+    "label": "Документо-ориентированная СУБД",
+    "definition": "СУБД, хранящая данные в виде документов (JSON/BSON) без жёсткой схемы.",
     "source": "model"
   },
   {
-    "id": "skill_lang",
+    "id": "dbms_kv",
     "kind": "class",
-    "label": "Язык программирования",
-    "definition": "Язык программирования или запросов, входящий в навыки разработчика.",
+    "label": "СУБД ключ–значение",
+    "definition": "СУБД пар «ключ–значение» для простого и быстрого доступа к значениям по ключу.",
     "source": "model"
   },
   {
-    "id": "skill_fw",
+    "id": "dbms_graph",
     "kind": "class",
-    "label": "Фреймворк",
-    "definition": "Программный фреймворк: набор библиотек и инструментов поверх языка программирования.",
+    "label": "Графовая СУБД",
+    "definition": "СУБД, хранящая сущности как вершины и рёбра и оптимизированная под обход связей.",
     "source": "model"
   },
   {
-    "id": "skill_db",
+    "id": "criterion",
     "kind": "class",
-    "label": "Базы данных и языки запросов",
-    "definition": "Технологии хранения данных: СУБД и языки запросов к ним.",
+    "label": "Критерий выбора",
+    "definition": "Параметр, по которому сравниваются кандидатные СУБД при выборе для проекта.",
     "source": "model"
   },
   {
-    "id": "skill_tool",
+    "id": "criterion_data",
     "kind": "class",
-    "label": "Инструмент разработки",
-    "definition": "Инструмент разработки и эксплуатации кода: контроль версий, контейнеризация и т. п.",
+    "label": "Критерий модели данных",
+    "definition": "Критерий, связанный с моделью данных и форматом хранения.",
     "source": "model"
   },
   {
-    "id": "candidate",
+    "id": "criterion_perf",
     "kind": "class",
-    "label": "Кандидат",
-    "definition": "Человек, рассматривающийся на вакансию; имеет опыт работы и набор навыков.",
+    "label": "Критерий производительности",
+    "definition": "Критерий, связанный с производительностью системы хранения.",
     "source": "model"
   },
   {
-    "id": "course",
+    "id": "criterion_scale",
     "kind": "class",
-    "label": "Курс",
-    "definition": "Образовательная программа, разделённая на модули и обучающая определённым навыкам.",
+    "label": "Критерий масштабирования",
+    "definition": "Критерий горизонтального масштабирования под растущей нагрузкой.",
     "source": "model"
   },
   {
-    "id": "course_module",
+    "id": "criterion_ops",
     "kind": "class",
-    "label": "Модуль курса",
-    "definition": "Логическая часть курса, посвящённая одной теме.",
+    "label": "Критерий эксплуатации",
+    "definition": "Критерий, связанный с лицензированием, стоимостью и сложностью эксплуатации.",
     "source": "model"
   },
   {
-    "id": "vac_java",
-    "kind": "instance",
-    "label": "Вакансия Java-разработчика",
-    "definition": "Открытая позиция бэкенд-разработчика на Java и Spring.",
+    "id": "project",
+    "kind": "class",
+    "label": "Проект",
+    "definition": "Информационная система, для которой подбирается СУБД.",
     "source": "model"
   },
   {
-    "id": "vac_python",
+    "id": "requirement",
+    "kind": "class",
+    "label": "Требование проекта",
+    "definition": "Требование проекта к системе хранения данных.",
+    "source": "model"
+  },
+
+  {
+    "id": "postgresql",
     "kind": "instance",
-    "label": "Вакансия Python-разработчика",
-    "definition": "Открытая позиция бэкенд-разработчика на Python.",
+    "label": "PostgreSQL",
+    "definition": "Свободная реляционная СУБД с развитой системой транзакций и расширений.",
+    "source": "s_postgresql"
+  },
+  {
+    "id": "mysql",
+    "kind": "instance",
+    "label": "MySQL",
+    "definition": "Популярная реляционная СУБД открытого кода.",
+    "source": "s_mysql"
+  },
+  {
+    "id": "sqlite",
+    "kind": "instance",
+    "label": "SQLite",
+    "definition": "Встраиваемая реляционная СУБД, работающая в одном процессе без сервера.",
+    "source": "s_sqlite"
+  },
+  {
+    "id": "oracle",
+    "kind": "instance",
+    "label": "Oracle Database",
+    "definition": "Коммерческая реляционная СУБД корпоративного класса.",
+    "source": "s_oracle_db"
+  },
+  {
+    "id": "mongodb",
+    "kind": "instance",
+    "label": "MongoDB",
+    "definition": "Документо-ориентированная СУБД с гибкой схемой и хранением BSON.",
+    "source": "s_mongodb"
+  },
+  {
+    "id": "redis",
+    "kind": "instance",
+    "label": "Redis",
+    "definition": "СУБД ключ–значение с хранением данных в оперативной памяти.",
+    "source": "s_redis"
+  },
+  {
+    "id": "neo4j",
+    "kind": "instance",
+    "label": "Neo4j",
+    "definition": "Графовая СУБД с ядром, ориентированным на обход связей между объектами.",
+    "source": "s_neo4j"
+  },
+
+  {
+    "id": "project_shop",
+    "kind": "instance",
+    "label": "Проект «Онлайн-магазин»",
+    "definition": "Интернет-магазин: каталог товаров, заказы, оплата.",
     "source": "model"
   },
   {
-    "id": "sk_java",
+    "id": "project_iot",
     "kind": "instance",
-    "label": "Java",
-    "definition": "Статически типизированный язык программирования платформы JVM.",
-    "source": "s_oracle"
-  },
-  {
-    "id": "sk_python",
-    "kind": "instance",
-    "label": "Python",
-    "definition": "Интерпретируемый язык программирования общего назначения.",
-    "source": "s_python"
-  },
-  {
-    "id": "sk_spring",
-    "kind": "instance",
-    "label": "Spring Framework",
-    "definition": "Фреймворк прикладной разработки на Java.",
-    "source": "s_spring"
-  },
-  {
-    "id": "sk_django",
-    "kind": "instance",
-    "label": "Django",
-    "definition": "Высокоуровневый веб-фреймворк на Python.",
-    "source": "s_django"
-  },
-  {
-    "id": "sk_sql",
-    "kind": "instance",
-    "label": "SQL",
-    "definition": "Стандартный язык запросов к реляционным базам данных.",
-    "source": "s_postgres"
-  },
-  {
-    "id": "sk_git",
-    "kind": "instance",
-    "label": "Git",
-    "definition": "Распределённая система контроля версий.",
-    "source": "s_gitscm"
-  },
-  {
-    "id": "sk_docker",
-    "kind": "instance",
-    "label": "Docker",
-    "definition": "Платформа контейнеризации приложений.",
-    "source": "s_docker"
-  },
-  {
-    "id": "cand_ivan",
-    "kind": "instance",
-    "label": "Кандидат Иван",
-    "definition": "Бэкенд-разработчик, владеет Java, SQL и Git.",
+    "label": "Проект «Сервис телеметрии»",
+    "definition": "Сбор и хранение телеметрии датчиков и устройств.",
     "source": "model"
   },
   {
-    "id": "cand_maria",
+    "id": "project_reco",
     "kind": "instance",
-    "label": "Кандидат Мария",
-    "definition": "Бэкенд-разработчик на Python, владеет Python, SQL и Docker.",
+    "label": "Проект «Сервис рекомендаций»",
+    "definition": "Подбор рекомендаций на основе связей между объектами.",
+    "source": "model"
+  },
+
+  {
+    "id": "req_acid",
+    "kind": "instance",
+    "label": "Транзакции ACID",
+    "definition": "Гарантии целостности данных при конкурентной записи.",
     "source": "model"
   },
   {
-    "id": "cand_alex",
+    "id": "req_docs",
     "kind": "instance",
-    "label": "Кандидат Алексей",
-    "definition": "Начинающий разработчик, владеет Java и Git.",
+    "label": "Хранение документов",
+    "definition": "Структурированные документы переменной формы (JSON).",
     "source": "model"
   },
   {
-    "id": "crs_spring",
+    "id": "req_scale",
     "kind": "instance",
-    "label": "Курс «Spring с нуля»",
-    "definition": "Онлайн-курс по Spring: от базовой конфигурации до внедрения зависимостей.",
+    "label": "Горизонтальное масштабирование",
+    "definition": "Распределение нагрузки на несколько узлов кластера.",
     "source": "model"
   },
   {
-    "id": "crs_sql",
+    "id": "req_graph",
     "kind": "instance",
-    "label": "Курс «SQL: практика»",
-    "definition": "Практический курс SQL: запросы, индексы, оптимизация.",
+    "label": "Граф связей",
+    "definition": "Хранение и быстрый обход связей между объектами.",
     "source": "model"
   },
   {
-    "id": "crs_git",
+    "id": "req_latency",
     "kind": "instance",
-    "label": "Курс «Git для разработчиков»",
-    "definition": "Курс по Git: ветвление, слияние, командная работа.",
+    "label": "Низкая задержка чтения",
+    "definition": "Быстрый отклик системы на операции чтения.",
     "source": "model"
   },
   {
-    "id": "mod_spring_basics",
+    "id": "req_simple_deploy",
     "kind": "instance",
-    "label": "Модуль «Внедрение зависимостей»",
-    "definition": "Модуль курса Spring: контейнер и внедрение зависимостей.",
+    "label": "Простое развёртывание",
+    "definition": "Запуск на одной машине без отдельного кластера.",
+    "source": "model"
+  },
+
+  {
+    "id": "crit_consistency",
+    "kind": "instance",
+    "label": "Согласованность данных",
+    "definition": "Модель гарантий при одновременной записи и чтении.",
     "source": "model"
   },
   {
-    "id": "mod_sql_practice",
+    "id": "crit_model",
     "kind": "instance",
-    "label": "Модуль «Запросы и индексы»",
-    "definition": "Модуль курса SQL: сложные запросы и индексы.",
+    "label": "Модель данных и формат",
+    "definition": "Способ представления данных и работа со схемой.",
     "source": "model"
   },
   {
-    "id": "val_op_1y",
+    "id": "crit_latency",
+    "kind": "instance",
+    "label": "Задержка операций",
+    "definition": "Время отклика типовых операций чтения и записи.",
+    "source": "model"
+  },
+  {
+    "id": "crit_license",
+    "kind": "instance",
+    "label": "Тип лицензирования",
+    "definition": "Условия использования: открытая или коммерческая лицензия.",
+    "source": "model"
+  },
+  {
+    "id": "crit_complexity",
+    "kind": "instance",
+    "label": "Сложность эксплуатации",
+    "definition": "Усилия на развёртывание, настройку и поддержку системы.",
+    "source": "model"
+  },
+
+  {
+    "id": "val_lic_open",
     "kind": "value",
-    "label": "Опыт: 1 год",
-    "definition": "Значение свойства «опыт работы» — 1 год.",
+    "label": "Лицензия: открытая",
+    "definition": "Значение свойства «лицензия» — свободное использование по открытой лицензии.",
     "source": "model"
   },
   {
-    "id": "val_op_2y",
+    "id": "val_lic_comm",
     "kind": "value",
-    "label": "Опыт: 2 года",
-    "definition": "Значение свойства «опыт работы» — 2 года.",
+    "label": "Лицензия: коммерческая",
+    "definition": "Значение свойства «лицензия» — использование по коммерческому контракту.",
     "source": "model"
   },
   {
-    "id": "val_op_3y",
+    "id": "val_cost_free",
     "kind": "value",
-    "label": "Опыт: 3 года",
-    "definition": "Значение свойства «опыт работы» — 3 года.",
+    "label": "Стоимость: бесплатная",
+    "definition": "Значение свойства «стоимость» — нет платы за использование.",
+    "source": "model"
+  },
+  {
+    "id": "val_cost_paid",
+    "kind": "value",
+    "label": "Стоимость: платная",
+    "definition": "Значение свойства «стоимость» — требуется оплата лицензии.",
     "source": "model"
   }
 ]

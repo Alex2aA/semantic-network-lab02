@@ -323,7 +323,7 @@ class SemanticNetwork:
 
     @staticmethod
     def path_to_text(net: "SemanticNetwork", hops: List[Hop]) -> str:
-        """Понятная цепочка: «A —требует→ B ←владеет— C»."""
+        """Понятная цепочка: «A —предъявляет→ B ←удовлетворяет— C»."""
         if not hops:
             return "(путь не найден)"
         parts = [net.label(hops[0].current)]

@@ -1,5 +1,6 @@
 """Пять проверочных сценариев семантической сети (unittest).
 
+Домен: выбор СУБД для проекта (фрагмент экспертных знаний).
 Сценарии соответствуют таблице проверок из лабораторной работы:
   1. поиск по отношению (соседи нужного типа);
   2. иерархия (предки и потомки);
@@ -33,75 +34,82 @@ class SemanticNetworkTestCase(unittest.TestCase):
 class Test1NeighborsByRelation(SemanticNetworkTestCase):
     """Проверка 1: поиск по отношению — все соседи нужного типа."""
 
-    def test_outgoing_requires(self):
-        result = self.net.neighbors("vac_java", relation="requires", direction="out")
-        self.assertEqual(sorted(result), ["sk_java", "sk_spring", "sk_sql"])
+    def test_outgoing_satisfies(self):
+        result = sorted(self.net.neighbors("postgresql", relation="satisfies"))
+        self.assertEqual(result, ["req_acid", "req_docs", "req_scale"])
 
     def test_neighbors_have_expected_types(self):
-        """Каждый сосед по «требует» — экземпляр класса «Навык»."""
-        for skill in self.net.neighbors("vac_java", relation="requires"):
-            chain = self.net.class_chain(skill)
-            self.assertIn("skill", chain,
-                          f"узел '{skill}' не является навыком")
+        """Каждый объект по «удовлетворяет» — экземпляр класса «Требование проекта»."""
+        for req in self.net.neighbors("postgresql", relation="satisfies"):
+            chain = self.net.class_chain(req)
+            self.assertIn("requirement", chain, f"узел '{req}' не является требованием")
 
     def test_reverse_direction(self):
-        """Обратный поиск: вакансии, требующие SQL."""
-        result = self.net.neighbors("sk_sql", relation="requires", direction="in")
-        self.assertEqual(sorted(result), ["vac_java", "vac_python"])
+        """Обратный поиск: СУБД, удовлетворяющие требованию «Транзакции ACID»."""
+        result = sorted(self.net.neighbors("req_acid", relation="satisfies",
+                                           direction="in"))
+        self.assertEqual(result, ["mysql", "oracle", "postgresql", "sqlite"])
 
     def test_relation_filter_excludes_others(self):
         """Фильтр по отношению не смешивает типы связей."""
-        knows_only = self.net.neighbors("cand_ivan", relation="knows")
-        self.assertEqual(sorted(knows_only), ["sk_git", "sk_java", "sk_sql"])
-        # Связи других типов («экземпляр», «имеет опыта») не попадают в выдачу.
-        self.assertNotIn("candidate", knows_only)
-        self.assertNotIn("val_op_3y", knows_only)
-        knows_objects = [t["o"] for t in self.net.triples
-                         if t["s"] == "cand_ivan" and t["p"] == "knows"]
-        self.assertEqual(sorted(knows_only), sorted(knows_objects))
+        presents_only = sorted(self.net.neighbors("project_shop", relation="presents"))
+        self.assertEqual(presents_only,
+                         ["req_acid", "req_docs", "req_latency", "req_scale"])
+        # Связи других типов («рекомендует», «экземпляр») не попадают в выдачу.
+        self.assertNotIn("postgresql", presents_only)
+        self.assertNotIn("project", presents_only)
+        presents_objects = [t["o"] for t in self.net.triples
+                            if t["s"] == "project_shop" and t["p"] == "presents"]
+        self.assertEqual(presents_only, sorted(presents_objects))
 
 
 class Test2Hierarchy(SemanticNetworkTestCase):
     """Проверка 2: иерархия — верные предки и потомки."""
 
     def test_ancestors_of_instance(self):
-        self.assertEqual(self.net.ancestors("vac_java"),
-                         ["vacancy_backend", "vacancy_dev", "vacancy"])
+        self.assertEqual(self.net.ancestors("postgresql"),
+                         ["dbms_oltp", "dbms_rel", "dbms"])
 
-    def test_ancestors_of_skill(self):
-        self.assertEqual(self.net.ancestors("sk_spring"), ["skill_fw", "skill"])
+    def test_ancestors_of_criterion(self):
+        self.assertEqual(self.net.ancestors("crit_latency"),
+                         ["criterion_scale", "criterion_perf", "criterion"])
 
-    def test_descendants_of_vacancy(self):
-        desc = self.net.descendants("vacancy")
-        self.assertEqual(sorted(desc),
-                         ["vac_java", "vac_python", "vacancy_backend", "vacancy_dev"])
+    def test_descendants_of_dbms(self):
+        desc = sorted(self.net.descendants("dbms"))
+        self.assertEqual(desc, [
+            "dbms_doc", "dbms_graph", "dbms_kv", "dbms_oltp", "dbms_rel",
+            "mongodb", "mysql", "neo4j", "oracle", "postgresql", "redis", "sqlite",
+        ])
 
     def test_hierarchy_has_two_levels(self):
-        """Иерархия классов имеет минимум 2 уровня (3 узла в цепочке)."""
-        self.assertEqual(self.net.ancestors("vacancy_backend"),
-                         ["vacancy_dev", "vacancy"])
+        """Иерархия имеет минимум 2 уровня: СУБД → Реляционная → OLTP."""
+        self.assertEqual(self.net.ancestors("dbms_oltp"), ["dbms_rel", "dbms"])
 
 
 class Test3PathExists(SemanticNetworkTestCase):
     """Проверка 3: путь A → B — существующая объяснимая цепочка."""
 
-    def test_path_course_to_vacancy(self):
-        hops = self.net.find_path("crs_sql", "vac_java")
+    def test_path_project_to_dbms(self):
+        hops = self.net.find_path("project_reco", "neo4j",
+                                  relations={"presents", "satisfies"})
         self.assertTrue(hops, "ожидался существующий путь")
-        self.assertEqual(self.net.path_nodes("crs_sql", "vac_java"),
-                         ["crs_sql", "sk_sql", "vac_java"])
+        self.assertEqual(self.net.path_nodes("project_reco", "neo4j",
+                                             relations={"presents", "satisfies"}),
+                         ["project_reco", "req_graph", "neo4j"])
 
     def test_path_text_is_readable(self):
-        hops = self.net.find_path("crs_sql", "vac_java")
+        hops = self.net.find_path("project_reco", "neo4j",
+                                  relations={"presents", "satisfies"})
         text = self.net.path_to_text(self.net, hops)
         self.assertEqual(
             text,
-            "Курс «SQL: практика» —обучает→ SQL ←требует— Вакансия Java-разработчика",
+            "Проект «Сервис рекомендаций» —предъявляет→ Граф связей "
+            "←удовлетворяет— Neo4j",
         )
 
     def test_path_directions_match_triples(self):
         """Каждый шаг пути соответствует реально записанному факту."""
-        hops = self.net.find_path("crs_spring", "cand_ivan")
+        hops = self.net.find_path("project_shop", "crit_license")
         self.assertTrue(hops)
         facts = {(t["s"], t["p"], t["o"]) for t in self.net.triples}
         for hop in hops:
@@ -114,19 +122,19 @@ class Test4NoPath(SemanticNetworkTestCase):
     """Проверка 4 (отрицательный сценарий): нет пути — пустой результат."""
 
     def test_no_path_in_hierarchy_only(self):
-        """Между классами «Навык» и «Вакансия» нет пути по иерархическим связям."""
-        hops = self.net.find_path("skill", "vacancy",
+        """Между «Критерием выбора» и «СУБД» нет пути по иерархическим связям."""
+        hops = self.net.find_path("criterion", "dbms",
                                   relations={"subclass", "instance"})
         self.assertEqual(hops, [])  # пусто, исключение не выброшено
 
     def test_same_nodes_connected_by_subject_relations(self):
         """Контраст: при всех отношениях путь существует — проверка корректности фильтра."""
-        hops = self.net.find_path("skill", "vacancy")
+        hops = self.net.find_path("criterion", "dbms")
         self.assertTrue(hops)
 
     def test_unknown_node_reported_cleanly(self):
         with self.assertRaises(Exception) as ctx:
-            self.net.find_path("no_such_node", "vac_java")
+            self.net.find_path("no_such_node", "postgresql")
         self.assertIn("Неизвестный узел", str(ctx.exception))
 
 
@@ -156,7 +164,7 @@ class Test5Validate(SemanticNetworkTestCase):
              "range_kinds": ["class"], "domain_classes": [], "range_classes": [],
              "meaning": "m", "inverse": "i", "transitive": True, "symmetric": False,
              "irreflexive": True},
-            {"id": "knows", "label": "владеет", "domain_kinds": ["instance"],
+            {"id": "knows", "label": "покрывает", "domain_kinds": ["instance"],
              "domain_classes": ["a_cls"], "range_kinds": ["instance"],
              "range_classes": ["b_cls"], "meaning": "m", "inverse": "i",
              "transitive": False, "symmetric": False, "irreflexive": True},
@@ -172,7 +180,7 @@ class Test5Validate(SemanticNetworkTestCase):
             {"s": "a_cls", "p": "knows", "o": "b_cls", "source": "model"},
             # неизвестный источник
             {"s": "b_cls", "p": "knows", "o": "a_cls", "source": "nope"},
-            # верный вид узла, но не тот класс (и самоссылка по «владеет»)
+            # верный вид узла, но не тот класс
             {"s": "stranger", "p": "knows", "o": "b_cls", "source": "model"},
             # самоссылка в иерархии
             {"s": "a_cls", "p": "subclass", "o": "a_cls", "source": "model"},
